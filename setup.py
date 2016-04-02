@@ -12,3 +12,7 @@ setup(
   download_url = 'https://github.com/sne3ks/Exode/tarball/0.3',
   license='APACHE 2.0'
 )
+
+# python setup.py register
+# python python setup.py sdist upload
+# http://peterdowns.com/posts/first-time-with-pypi.html
