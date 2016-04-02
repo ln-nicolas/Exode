@@ -1,3 +1,3 @@
-from Board import *
-from Core import *
-from Object import *
+from .Board import *
+from .Core import *
+from .Object import *
