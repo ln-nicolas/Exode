@@ -1,0 +1,3 @@
+include Exode/Board/*.py
+include Exode/Core/*.py
+include Exode/Object/*.py
