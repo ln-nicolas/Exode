@@ -10,10 +10,8 @@ Python's library for communication between Arduino microcontroller boards and a 
 ```python
 from Exode import *
 
-uno = ArduinoUno('/dev/tty.wchusbserial1420')
-
-led = Led(13,'OUTPUT')
-uno.add(led)
+uno = Board('/dev/tty.wchusbserial1420')
+led = Led(13)
 
 led.blink(500)
 ```
@@ -41,13 +39,10 @@ complexe tasks. You may add artificial intelligence algorithm in your projects..
 ```python
 
 from Exode import *
-uno = ArduinoUno('/dev/tty.HC-06-DevB')
+uno = Board('/dev/tty.HC-06-DevB')
 
 led13 = Led(13)
 led14 = Led(14)
-
-uno.add(led13)
-uno.add(led14)
 
 led13.blink(250)
 led14.blink(500)
