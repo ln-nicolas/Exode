@@ -1,3 +1,4 @@
+from ..Core.boardManager import *
 
 _VARIABLES = {
     0:0,
@@ -20,6 +21,8 @@ class ppmPin():
         self._pin= pin
 
         self.board= None
+
+        BOARD_MANAGER.autoAddObj(self)
 
     def on(self, board):
         self.board = board

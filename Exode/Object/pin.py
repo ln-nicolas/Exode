@@ -1,3 +1,4 @@
+from ..Core.boardManager import *
 from ..Core.callback import *
 
 _VARIABLES = {
@@ -31,12 +32,13 @@ class DigPin:
         "off" : CallBack()
         }
 
+        BOARD_MANAGER.autoAddObj(self)
+
     def on(self, board):
         self.board = board
         board.add(self)
 
         board.addObject("digPin",self)
-
         board.pinMode(self._pin, self._mode)
 
     def mode(self, mode):

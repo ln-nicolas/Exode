@@ -17,6 +17,7 @@ class HCSR04():
         self.cm = -1
 
         self._updateEvent = CallBack()
+        BOARD_MANAGER.autoAddObj(self)
 
     def on(self, board):
 

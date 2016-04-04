@@ -14,6 +14,8 @@ class L298N_MOTOR:
         self._direction = 1
         self.isRunning = False
 
+        BOARD_MANAGER.autoAddObj(self)
+
     def on(self, board):
 
         self._dc.on(board)
