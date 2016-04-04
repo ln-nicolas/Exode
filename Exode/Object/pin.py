@@ -55,8 +55,8 @@ class DigPin:
 
     def read(self):
         key = self.board.getKey()
-        self.board.digitalRead(self.pin, key)
-        self.board.addListener(key= key, updateFunction=self.updateLvl)
+        self.board.digitalRead(self._pin, key)
+        self.board.addListener(key= key, updateFunction=self.update)
 
     def update(self, lvl):
         if self._lvl != lvl:
@@ -171,9 +171,7 @@ class Led(DigPin):
 
     def __init__(self, pin):
         DigPin.__init__(self, pin, 'OUTPUT')
-
     def blink(self, period):
         self.periodicWrite(period)
-
     def stopBlink(self):
         self.stopPeriodicWrite()

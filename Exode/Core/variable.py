@@ -7,7 +7,7 @@
 #   lenselle.nicolas@gmail.com
 
 # debug mode
-DEBUG = False
+DEBUG = True
 
 # board's functions
 _FUNCTIONS = {

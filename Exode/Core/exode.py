@@ -28,20 +28,6 @@ class ExodeSpeaker :
         self.connected = False
         self.mute = False
 
-        #if self.port != None:
-        #    self.waitBoard()
-
-
-    def waitBoard(self):
-        while self.port.inWaiting() <= 0:
-            self.connected = False
-        answer=""
-        while self.port.inWaiting()>0:
-            answer += self.port.read().decode("utf-8")
-        if answer == "run": # The board send the key word 'run' during the initialisation
-            self.connected = True
-        if (DEBUG):
-            print(answer)
 
     def debugSpeak(self, byteArray, instruction):
         if (DEBUG):
@@ -120,6 +106,7 @@ class ExodeListener:
     def addListener(self, updateFunction, requestFunction=None, key=-1, isInfinite=False):
         if key==-1:
             key = self.getKey()
+        print("k"+str(key))
         self.listener[key] = valueListener(key, updateFunction, requestFunction, isInfinite)
 
     def debug(self, key, value):
