@@ -29,7 +29,9 @@ _FUNCTIONS = {
 
     "executeThread":11,
     "initThread":12,
-    "deleteThread":13
+    "deleteThread":13,
+
+    "resetBoard":14
     }
 _INV_FUNCTIONS = {v: k for k, v in _FUNCTIONS.items()}
 def fct(name):

@@ -82,6 +82,9 @@ class ExodeSpeaker :
     def pulseIn(self, pin, key):
         return self.speak(bytearray([fct('pulseIn'), pin, key]))
 
+    def resetBoard(self):
+        return self.speak(bytearray([fct('resetBoard')]))
+
 class ExodeListener:
 
     def __init__(self, serialPort):
