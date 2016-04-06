@@ -6,3 +6,5 @@ dist
 .gitignore
 *.log
 .idea
+Exode/Core/__pycache__
+Exode/Object/__pycache__

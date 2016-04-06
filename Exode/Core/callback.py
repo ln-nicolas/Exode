@@ -13,7 +13,7 @@ import time
 
 class CallBack:
 
-    def __init__(self, function=None, *args, activate=True):
+    def __init__(self, function=None, activate=True, *args):
         self._fc = function
         self._on = activate
         self._args = args

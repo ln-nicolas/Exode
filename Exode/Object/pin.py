@@ -1,6 +1,5 @@
-from ..Core.boardManager import *
 from ..Core.callback import *
-from ..Core import logObj
+from .model import obj
 
 _VARIABLES = {
     0:0,
@@ -13,7 +12,7 @@ _VARIABLES = {
     'OFF':0,
 }
 
-class DigPin:
+class DigPin(obj):
 
     def __init__(self, pin, mode):
 
@@ -33,33 +32,27 @@ class DigPin:
         "off" : CallBack()
         }
 
-        BOARD_MANAGER.autoAddObj(self)
+        obj.__init__(self, "digPin("+str(self._pin)+")")
 
-    def __repr__(self):
-        return str(self.board)+"."+"digPin("+self._pin+")"
-
-    def log(self, msg):
-        logObj(str(self)+msg)
-
-    def on(self, board):
+    def setup(self, board):
         self.board = board
         board.add(self)
 
         board.addObject("digPin",self)
         board.pinMode(self._pin, self._mode)
-        self.log(".mode("+self._mode+")")
+        self.log(".mode("+str(self._mode)+")")
 
     def mode(self, mode):
         self._mode = mode
-        self.board.pinMode(pin, 'OUTPUT')
-        self.log(".mode("+self._mode+")")
+        self.board.pinMode(self._pin, 'OUTPUT')
+        self.log(".mode("+str(self._mode)+")")
 
 
     def write(self, lvl):
         if self._mode == 1:
             self._lvl = _VARIABLES[lvl]
             self.board.digitalWrite(self._pin, self._lvl)
-            self.log(".write("+self._lvl+")")
+            self.log(".write("+str(self._lvl)+")")
 
     def switch(self):
         self.board.digitalSwitch(self._pin)
@@ -114,7 +107,7 @@ class DigPin:
         else:
             self._writeThread.stop()
             self._writeThread.start(period)
-        self.log(".periodicWrite("+period+")")
+        self.log(".periodicWrite("+str(period)+")")
 
     def stopPeriodicWrite(self):
         self._writeThread.stop()
@@ -122,14 +115,14 @@ class DigPin:
 
     def attachEvent(self, event, callback, *args):
         self._event[event].setCallback(callback, *args)
-        self.log(".attachEvent("+event+", "+str(callback)+", "+str(*args))
+        self.log(".attachEvent("+event+", "+str(callback)+", "+str(args))
 
     def detachEvent(self, event):
         self._event[event].reset()
         self.log(".detachEvent("+event+")")
 
 
-class AnaPin:
+class AnaPin(obj):
 
     def __init__(self, pin, mode):
 
@@ -143,25 +136,31 @@ class AnaPin:
         self._listenThread = None
         self._updateEvent = CallBack()
 
-    def on(self, board):
+        obj.__init__(self, "anaPin("+str(self._pin)+")")
+
+    def setup(self, board):
         self.board = board
         board.add(self)
 
         board.addObject("anaPin",self)
         board.pinMode(self._pin, self._mode)
+        self.log(".pinMode("+str(self._mode)+")")
 
     def update(self, value):
         self.value = value
+        self.log(":read "+value)
         self._updateEvent.call()
 
     def write(self, value):
         self.value = value
         self.board.analogWrite(self._pin, self.value)
+        self.log(".write("+str(value)+")")
 
     def read(self):
         key = self.board.getKey()
         self.board.analogRead(self._pin, self.key)
         self.board.addListener(key= key, updateFunction=self.update)
+        self.log(".read()")
 
     def listen(self, period= 100):
         if self._listenThread == None:
@@ -173,13 +172,16 @@ class AnaPin:
         else:
             self._listenThread.stop()
             self._listenThread.start(period)
+        self.log(".listen("+str(period)+")")
 
     def attachEvent(self, event, callback, *args):
         self._updateEvent.setCallback(callback, *args)
+        self.log(".attachEvent(read, "+", "+str(callback)+"("+list(args)+")")
 
     def detachEvent(self):
         self._updateEvent.reset()
         self.stopListen()
+        self.log(".detachEvent(read)")
 
 
 class Button(DigPin):

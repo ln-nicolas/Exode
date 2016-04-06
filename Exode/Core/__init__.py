@@ -11,17 +11,16 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 handler = logging.FileHandler('Exode-'+current_time.isoformat()+'.log')
-handler.setLevel(8)
+#handler.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def logObj(msg):
-    logger.log(8, msg)
-
+    logger.debug("OBJC - "+msg)
 def logCore(msg):
-    logger.log(9, msg)
+    logger.debug("CORE - "+msg)
 
 logger.info("Here we go !")
 

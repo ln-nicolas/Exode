@@ -50,6 +50,7 @@ class BoardManager():
 
     def add(self, board):
         board.id= len(self.boardList)
+        board.name="Board-"+str(board.id)
         self.boardList.append(board)
 
     def searchBoard(self):
@@ -105,19 +106,18 @@ class Board(Exode):
     def __init__(self, port, name=""):
 
         if port not in BOARD_MANAGER.portUsed():
-            if name == "":
-                self.name= "Board-"+str(id)
-            else:
-                self.name= name
 
-            Exode.__init__(self, port, self.name)
             self.portPath= port
             self.objLst= {}
             self.id = -1
             self.mute= False
 
-            logCore(self.name+" init at : "+self.portPath)
             BOARD_MANAGER.add(self)
+            if name != "":
+                self.name= name
+            Exode.__init__(self, port, self.name)
+            logCore(self.name+" init at : "+self.portPath)
+
         else:
             self= BOARD_MANAGER.getBoardByPort(port)
 

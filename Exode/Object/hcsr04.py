@@ -1,6 +1,7 @@
 from .pin import *
+from .model import obj
 
-class HCSR04():
+class HCSR04(obj):
 
     def __init__(self, echo, trig):
 
@@ -17,10 +18,9 @@ class HCSR04():
         self.cm = -1
 
         self._updateEvent = CallBack()
-        BOARD_MANAGER.autoAddObj(self)
+        obj.__init__(self, "HCSR04(trig="+str(self._trig)+", echo="+str(self._echo)+")")
 
-    def on(self, board):
-
+    def setup(self, board):
         self.board = board
         self._trig.on(board)
         self._echo.on(board)
@@ -30,24 +30,30 @@ class HCSR04():
         self._readThread.add('pulse',self._trig._pin,10)
         self._readThread.add('pulseIn',self._echo._pin, self._readKey)
         self.board.addListener(key=self._readKey, updateFunction=self.update, isInfinite= True)
+        self.log(".setup() key="+str(self._readKey))
 
 
     def update(self, duration):
         self.duration = duration
         self.cm = round(duration/58.2, 2)
 
+        self.log(":update duration="+str(duration)+" cm="+str(cm))
         self._updateEvent.call()
 
     def read(self, period=0):
         self._period = period
         self._readThread.start(self._period)
+        self.log(".read("+str(period)+")")
 
     def stopRead(self):
         self._readThread.stop()
+        self.log(".stopRead()")
 
     def attachEvent(self, event, callback, *args):
         print(callback)
         self._updateEvent.setCallback(callback, *args)
+        self.log(".attachEvent(read, "+str(callback)+", "+list(args)+")")
 
     def detachEvent(self, event):
         self._updateEvent.reset()
+        self.log(".detachEvent()")

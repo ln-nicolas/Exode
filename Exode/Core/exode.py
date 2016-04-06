@@ -17,7 +17,7 @@ import serial
 import time
 import _thread
 
-from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, DEBUG, fct
+from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, fct
 from .listener import valueListener
 from . import logCore
 
@@ -28,12 +28,15 @@ class ExodeSpeaker :
 
         self.connected = False
         self.mute = False
-        self.name = "speaker-"+name
+
+        if not hasattr(self, 'name'):
+            self.name= name
+
 
     def speak(self, byteArray):
         # 1st byte : lenght of the instruction
         protocolArray = bytearray([len(byteArray)]) + byteArray
-        logCore(self.name+" send "+_INV_FUNCTIONS[int(byteArray[0])]+" : "+str(list(protocolArray)))
+        logCore("speaker-"+self.name+" send "+_INV_FUNCTIONS[int(byteArray[0])]+" : "+str(list(protocolArray)))
 
         if not self.mute:
             self.port.write(protocolArray)
@@ -86,7 +89,9 @@ class ExodeListener:
     def __init__(self, serialPort, name=""):
         self.port = serialPort
         self.listener = {}
-        self.name= "listener-"+name
+
+        if not hasattr(self, 'name'):
+            self.name= name
 
         self.isRun = True
         _thread.start_new_thread(self.run,())
@@ -106,7 +111,6 @@ class ExodeListener:
     def addListener(self, updateFunction, requestFunction=None, key=-1, isInfinite=False):
         if key==-1:
             key = self.getKey()
-        print("k"+str(key))
         self.listener[key] = valueListener(key, updateFunction, requestFunction, isInfinite)
 
 
@@ -116,7 +120,7 @@ class ExodeListener:
 
             key = int.from_bytes(self.port.read(), byteorder='little')
             value = int.from_bytes(self.port.read(4), byteorder='little', signed=False)
-            logCore(self.name+" got ["+key+"]:"+value)
+            logCore("listener-"+self.name+" got ["+str(key)+"]:"+str(value))
 
             if key in self.listener.keys():
                 self.listener[key].updateValue(value)

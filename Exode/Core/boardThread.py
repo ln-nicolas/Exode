@@ -19,7 +19,7 @@
 #   Created by Lenselle Nicolas, January, 2016.
 #   lenselle.nicolas@gmail.com
 
-from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, DEBUG, fct
+from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, fct
 from .exode import ExodeSpeaker
 from . import logCore
 
@@ -74,7 +74,7 @@ class boardThread :
             self._board.addListener(key=key, updateFunction=self.setID)
 
         self._board.speak(byteCluster)
-        logCore(str(self)+" has been started with a cycle of "+period+"s ")
+        logCore(str(self)+" has been started with a cycle of "+str(period)+"ms ")
 
     def stop(self):
         if self.on == True and self._ID != -1:
@@ -82,3 +82,6 @@ class boardThread :
             self.on = False
             self._board.speak(bytearray([fct('deleteThread')])+self._ID.to_bytes(4,'little'))
             logCore(str(self)+ " has been stopped ")
+
+    def __repr__(self):
+        return "<boardThread at {0}>".format(hex(id(self)))

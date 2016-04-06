@@ -1,6 +1,7 @@
 from .pin import *
+from .model import obj
 
-class L298N_MOTOR:
+class L298N_MOTOR(obj):
 
     def __init__(self, DC, IN1, IN2, speed=100):
 
@@ -14,9 +15,9 @@ class L298N_MOTOR:
         self._direction = 1
         self.isRunning = False
 
-        BOARD_MANAGER.autoAddObj(self)
+        obj.__init__(self, "L298N_MOTOR(DC={self._dc}, IN1={self._IN1}, IN2={self._IN2} )".format(self=self))
 
-    def on(self, board):
+    def setup(self, board):
 
         self._dc.on(board)
         self._IN1.on(board)
@@ -24,10 +25,12 @@ class L298N_MOTOR:
 
         self._dc.write(self._speed)
         self.board = board
+        self.log(".setup()")
 
     def setSpeed(self, value):
         self._speed = value
         self._dc.write(value)
+        self.log(".speed("+str(value)+")")
 
     def setDirection(self, value):
         if value == 'forward' or value == 1:
@@ -35,19 +38,23 @@ class L298N_MOTOR:
         if value == 'backward' or value == -1:
             self._direction = -1
 
+        self.log(".setDirection("+str(value)+")")
         if self.isRunning:
             self.run()
 
     def switch(self):
         self.setDirection(-self._direction)
+        self.log(".switchDirection()")
 
     def runForward(self):
         self._IN1.write('HIGH')
         self._IN2.write('LOW')
+        self.log(".runForward()")
 
     def runBackward(self):
         self._IN1.write('LOW')
         self._IN2.write('HIGH')
+        self.log(".runBackward()")
 
     def run(self):
         if self._direction == 1:
@@ -62,3 +69,4 @@ class L298N_MOTOR:
         self._IN2.write('LOW')
 
         self.isRunning = False
+        self.log(".stop()")
