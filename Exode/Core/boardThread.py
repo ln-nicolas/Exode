@@ -21,6 +21,7 @@
 
 from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, DEBUG, fct
 from .exode import ExodeSpeaker
+from . import logCore
 
 class boardThread :
 
@@ -40,13 +41,14 @@ class boardThread :
 
     def add(self, name, *args):
         self._instructions.append([name, args])
+        logCore(name+"("+str(*args)+") add to the "+str(self))
 
     def start(self, period=0):
 
         self._period = period
 
         # we use a fake Speaker to get the byteCode
-        fakeSpeaker = ExodeSpeaker(None)
+        fakeSpeaker = ExodeSpeaker(None,"fake")
         fakeSpeaker.mute = True
 
         # byteCluster holding the byteCode
@@ -72,9 +74,11 @@ class boardThread :
             self._board.addListener(key=key, updateFunction=self.setID)
 
         self._board.speak(byteCluster)
+        logCore(str(self)+" has been started with a cycle of "+period+"s ")
 
     def stop(self):
         if self.on == True and self._ID != -1:
             self.period = -1
             self.on = False
             self._board.speak(bytearray([fct('deleteThread')])+self._ID.to_bytes(4,'little'))
+            logCore(str(self)+ " has been stopped ")

@@ -33,20 +33,16 @@ class CallBack:
     def setCallback(self, function, *args):
         self._fc = function
         self._args = args
-        print(args)
         if len(args) == 0:
             self._args = None
         self._on = True
 
     def reset(self):
-        print("reset Callback")
-        print(self)
         self._fc = None
         self._args = None
         self.on = False
 
     def call(self):
-        print(self._fc)
         if self._fc != None and self.isOn():
             if self._args != None:
                 return self._fc(*self._args)
@@ -107,7 +103,6 @@ class Timer():
         self.timer.start()
 
     def call(self):
-        print(self.callBack._fc)
         self.callBack.call()
         if self.loop:
             self.timer = threading.Timer(self.period, self.call)

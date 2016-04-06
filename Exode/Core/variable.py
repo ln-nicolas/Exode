@@ -6,9 +6,6 @@
 #   Created by Lenselle Nicolas, January, 2016.
 #   lenselle.nicolas@gmail.com
 
-# debug mode
-DEBUG = True
-
 # board's functions
 _FUNCTIONS = {
 
@@ -31,7 +28,8 @@ _FUNCTIONS = {
     "initThread":12,
     "deleteThread":13,
 
-    "resetBoard":14
+    "reset":14,
+    "checkExode":15
     }
 _INV_FUNCTIONS = {v: k for k, v in _FUNCTIONS.items()}
 def fct(name):

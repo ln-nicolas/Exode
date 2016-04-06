@@ -3,3 +3,6 @@ setup.py
 MANIFEST
 MANIFEST.in
 dist
+.gitignore
+*.log
+.idea

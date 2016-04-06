@@ -19,25 +19,21 @@ import _thread
 
 from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, DEBUG, fct
 from .listener import valueListener
+from . import logCore
 
 class ExodeSpeaker :
 
-    def __init__(self, serialPort):
+    def __init__(self, serialPort, name=""):
         self.port = serialPort
 
         self.connected = False
         self.mute = False
-
-
-    def debugSpeak(self, byteArray, instruction):
-        if (DEBUG):
-            print("(log) "+instruction+" : ",end="")
-            print(list(byteArray))
+        self.name = "speaker-"+name
 
     def speak(self, byteArray):
         # 1st byte : lenght of the instruction
         protocolArray = bytearray([len(byteArray)]) + byteArray
-        self.debugSpeak(protocolArray, _INV_FUNCTIONS[int(byteArray[0])])
+        logCore(self.name+" send "+_INV_FUNCTIONS[int(byteArray[0])]+" : "+str(list(protocolArray)))
 
         if not self.mute:
             self.port.write(protocolArray)
@@ -82,14 +78,15 @@ class ExodeSpeaker :
     def pulseIn(self, pin, key):
         return self.speak(bytearray([fct('pulseIn'), pin, key]))
 
-    def resetBoard(self):
-        return self.speak(bytearray([fct('resetBoard')]))
+    def reset(self):
+        return self.speak(bytearray([fct("reset")]))
 
 class ExodeListener:
 
-    def __init__(self, serialPort):
+    def __init__(self, serialPort, name=""):
         self.port = serialPort
         self.listener = {}
+        self.name= "listener-"+name
 
         self.isRun = True
         _thread.start_new_thread(self.run,())
@@ -112,9 +109,6 @@ class ExodeListener:
         print("k"+str(key))
         self.listener[key] = valueListener(key, updateFunction, requestFunction, isInfinite)
 
-    def debug(self, key, value):
-        if DEBUG:
-            print("["+str(key)+"] : "+str(value))
 
     def updateValues(self):
 
@@ -122,7 +116,7 @@ class ExodeListener:
 
             key = int.from_bytes(self.port.read(), byteorder='little')
             value = int.from_bytes(self.port.read(4), byteorder='little', signed=False)
-            self.debug(key, value)
+            logCore(self.name+" got ["+key+"]:"+value)
 
             if key in self.listener.keys():
                 self.listener[key].updateValue(value)
@@ -144,10 +138,10 @@ class ExodeListener:
 
 class Exode(ExodeSpeaker, ExodeListener):
 
-    def __init__(self, port):
+    def __init__(self, port, name=""):
         self.port = serial.Serial(port, 9600)
-        ExodeSpeaker.__init__(self, self.port)
-        ExodeListener.__init__(self, self.port)
+        ExodeSpeaker.__init__(self, self.port, name)
+        ExodeListener.__init__(self, self.port, name)
 
     def newThread(self):
         from .boardThread import boardThread
