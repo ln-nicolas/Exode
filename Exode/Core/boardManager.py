@@ -53,9 +53,10 @@ class BoardManager():
         board.name="Board-"+str(board.id)
         self.boardList.append(board)
 
-    def searchBoard(self):
+    def search(self):
         #Return the 1st board founded with Exode installed
         logCore("Searching for a board...")
+        boardList=[]
 
         #  Search a port
         if platform.system() == 'Windows':
@@ -90,9 +91,10 @@ class BoardManager():
                 continue
             else:
                 logCore("Arduino board detected with Exode at : "+p)
-                return Board(p)
+                boardList.append(p)
 
-        return None
+        print(boardList)
+        return boardList
 
 
     def autoAddObj(self, obj):
@@ -105,21 +107,21 @@ class Board(Exode):
 
     def __init__(self, port, name=""):
 
-        if port not in BOARD_MANAGER.portUsed():
+        if port not in BOARD.portUsed():
 
             self.portPath= port
             self.objLst= {}
             self.id = -1
             self.mute= False
 
-            BOARD_MANAGER.add(self)
+            BOARD.add(self)
             if name != "":
                 self.name= name
             Exode.__init__(self, port, self.name)
             logCore(self.name+" init at : "+self.portPath)
 
         else:
-            self= BOARD_MANAGER.getBoardByPort(port)
+            self= BOARD.getBoardByPort(port)
 
     def add(self, obj):
         if(obj.board == None):
@@ -133,5 +135,5 @@ class Board(Exode):
     def __repr__(self):
         return self.name
 
-BOARD_MANAGER= BoardManager()
+BOARD= BoardManager()
 #BOARD = BOARD_MANAGER.searchBoard()

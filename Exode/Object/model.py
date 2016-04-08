@@ -6,7 +6,7 @@ class obj:
     def __init__(self, signature, autoLoad=True):
         self.signature= signature
         if autoLoad:
-            BOARD_MANAGER.autoAddObj(self)
+            BOARD.autoAddObj(self)
 
     def __repr__(self):
         return str(self.board)+"."+self.signature
