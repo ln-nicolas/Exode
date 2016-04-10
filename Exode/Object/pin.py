@@ -99,7 +99,7 @@ class DigPin(obj):
         self._listenThread.stop()
         self.log(".stopListen()")
 
-    def periodicWrite(self, period):
+    def periodicSwitch(self, period):
         if self._writeThread == None:
             self._writeThread = self.board.newThread()
             self._writeThread.add('digitalSwitch', self._pin)
@@ -109,7 +109,7 @@ class DigPin(obj):
             self._writeThread.start(period)
         self.log(".periodicWrite("+str(period)+")")
 
-    def stopPeriodicWrite(self):
+    def stopPeriodicSwitch(self):
         self._writeThread.stop()
         self.log(".stopPeriodic()")
 
@@ -195,6 +195,6 @@ class Led(DigPin):
     def __init__(self, pin):
         DigPin.__init__(self, pin, 'OUTPUT')
     def blink(self, period):
-        self.periodicWrite(period)
+        self.periodicSwitch(period)
     def stopBlink(self):
-        self.stopPeriodicWrite()
+        self.stopPeriodicSwitch()
