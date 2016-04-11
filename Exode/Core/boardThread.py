@@ -41,7 +41,7 @@ class boardThread :
 
     def add(self, name, *args):
         self._instructions.append([name, args])
-        logCore(name+"("+str(*args)+") add to the "+str(self))
+        logCore(name+"("+str(args)+") add to the "+str(self))
 
     def start(self, period=0):
 

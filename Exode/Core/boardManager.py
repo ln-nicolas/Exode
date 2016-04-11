@@ -78,7 +78,7 @@ class BoardManager():
             # on the board
             sr.write(bytearray([1, fct('checkExode')]))
             sr.flush()
-            time.sleep(0.1)
+            time.sleep(0.25)
 
             # the board should answer 202,404
             ans= [0,0]
@@ -93,7 +93,6 @@ class BoardManager():
                 logCore("Arduino board detected with Exode at : "+p)
                 boardList.append(p)
 
-        print(boardList)
         return boardList
 
 

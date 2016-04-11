@@ -8,3 +8,10 @@ dist
 .idea
 Exode/Core/__pycache__
 Exode/Object/__pycache__
+*.ex.py
+*.pyc
+*.pyc
+
+Exode/Object/__pycache__/hcsr04.cpython-34.pyc
+
+Exode/Object/__pycache__/l298n.cpython-34.pyc

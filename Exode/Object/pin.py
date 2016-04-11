@@ -14,12 +14,13 @@ _VARIABLES = {
 
 class DigPin(obj):
 
-    def __init__(self, pin, mode):
+    def __init__(self, pin, mode, analogic=False):
 
         self.board = None
 
         self._pin = pin
         self._mode = _VARIABLES[mode]
+        self._analog=analogic
 
         self._lvl = 0
 
@@ -34,12 +35,12 @@ class DigPin(obj):
         board.add(self)
 
         board.addObject("digPin",self)
-        board.pinMode(self._pin, self._mode)
+        board.pinMode(self._pin, self._mode, analogic=self._analog)
         self.log(".mode("+str(self._mode)+")")
 
     def mode(self, mode):
         self._mode = mode
-        self.board.pinMode(self._pin, 'OUTPUT')
+        self.board.pinMode(self._pin, mode, analogic=self._analog)
         self.log(".mode("+str(self._mode)+")")
 
 
@@ -48,6 +49,11 @@ class DigPin(obj):
             self._lvl = _VARIABLES[lvl]
             self.board.digitalWrite(self._pin, self._lvl)
             self.log(".write("+str(self._lvl)+")")
+
+    def analogWrite(self, value):
+        self.value = value
+        self.board.analogWrite(self._pin, self.value)
+        self.log(".analogWrite("+str(value)+")")
 
     def switch(self):
         self.board.digitalSwitch(self._pin)
@@ -88,13 +94,13 @@ class DigPin(obj):
             self._listenThread.stop()
             self._listenThread.start(period)
 
-        self.log(".listen("+period+")")
+        self.log(".listen("+str(period)+")")
 
     def stopListen(self):
         self._listenThread.stop()
         self.log(".stopListen()")
 
-    def periodicWrite(self, period):
+    def periodicSwitch(self, period):
         if self._writeThread == None:
             self._writeThread = self.board.newThread()
             self._writeThread.add('digitalSwitch', self._pin)
@@ -102,9 +108,9 @@ class DigPin(obj):
         else:
             self._writeThread.stop()
             self._writeThread.start(period)
-        self.log(".periodicWrite("+str(period)+")")
+        self.log(".periodicSwitch("+str(period)+")")
 
-    def stopPeriodicWrite(self):
+    def stopPeriodicSwitch(self):
         self._writeThread.stop()
         self.log(".stopPeriodic()")
 
@@ -129,22 +135,22 @@ class AnaPin(obj):
         board.add(self)
 
         board.addObject("anaPin",self)
-        board.pinMode(self._pin, self._mode)
-        self.log(".pinMode("+str(self._mode)+")")
+        board.pinMode(self._pin, self._mode, analogic=True)
+        self.log(".AnaPinMode("+str(self._mode)+")")
 
     def update(self, value):
         self.value = value
-        self.log(":read "+value)
+        self.log(":read "+str(value))
         self.event("update").call()
 
-    def write(self, value):
-        self.value = value
-        self.board.analogWrite(self._pin, self.value)
-        self.log(".write("+str(value)+")")
+    def mode(self, mode):
+        self._mode = _VARIABLES[mode]
+        self.board.pinMode(self._pin, mode, analogic=True)
+        self.log(".mode("+str(mode)+")")
 
     def read(self):
         key = self.board.getKey()
-        self.board.analogRead(self._pin, self.key)
+        self.board.analogRead(self._pin, key)
         self.board.addListener(key= key, updateFunction=self.update)
         self.log(".read()")
 
@@ -160,6 +166,10 @@ class AnaPin(obj):
             self._listenThread.start(period)
         self.log(".listen("+str(period)+")")
 
+    def stopListen(self):
+        self._listenThread.stop()
+        self.log(".stopListen()")
+
 
 class Button(DigPin):
 
@@ -172,6 +182,6 @@ class Led(DigPin):
     def __init__(self, pin):
         DigPin.__init__(self, pin, 'OUTPUT')
     def blink(self, period):
-        self.periodicWrite(period)
+        self.periodicSwitch(period)
     def stopBlink(self):
-        self.stopPeriodicWrite()
+        self.stopPeriodicSwitch()

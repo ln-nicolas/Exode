@@ -43,9 +43,18 @@ class ExodeSpeaker :
 
         return protocolArray
 
-    def pinMode(self, pin, mode):
+    def pinMode(self, pin, mode, analogic=False):
         mode = _VARIABLES[mode]
-        return self.speak(bytearray([fct('pinMode'), pin, mode]))
+
+        ana=0
+        if analogic:
+            ana=1
+
+        return self.speak(bytearray([fct('pinMode'), pin, mode, ana]))
+
+    def anaPinMode(self, pin, mode):
+        mode= _VARIABLES[mode]
+        return self.speak(bytearray([fct('anaPinMode'), pin, mode]))
 
     def digitalWrite(self, pin, lvl):
         lvl = _VARIABLES[lvl]
@@ -130,7 +139,6 @@ class ExodeListener:
     def run(self):
         while 1:
             if self.isRun:
-                time.sleep(0.00001)
                 self.updateValues()
 
     def start(self):
@@ -147,6 +155,15 @@ class Exode(ExodeSpeaker, ExodeListener):
         ExodeSpeaker.__init__(self, self.port, name)
         ExodeListener.__init__(self, self.port, name)
 
+        #Otherwise, the arduino automatically resets..
+        time.sleep(2)
+
     def newThread(self):
         from .boardThread import boardThread
         return boardThread(self)
+
+    def wait(self,period=False):
+        t1= time.time()
+        t2= t1
+        while (t2-t1)*1000 < period or not period:
+            t2= time.time()
