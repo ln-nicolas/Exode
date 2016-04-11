@@ -17,8 +17,8 @@ class HCSR04(obj):
         self.duration = -1
         self.cm = -1
 
-        self._updateEvent = CallBack()
         obj.__init__(self, "HCSR04(trig="+str(self._trig)+", echo="+str(self._echo)+")")
+        self.setupEvent(["update"])
 
     def setup(self, board):
         self.board = board
@@ -38,7 +38,7 @@ class HCSR04(obj):
         self.cm = round(duration/58.2, 2)
 
         self.log(":update duration="+str(duration)+" cm="+str(cm))
-        self._updateEvent.call()
+        self.event("update").call()
 
     def read(self, period=0):
         self._period = period
@@ -48,12 +48,3 @@ class HCSR04(obj):
     def stopRead(self):
         self._readThread.stop()
         self.log(".stopRead()")
-
-    def attachEvent(self, event, callback, *args):
-        print(callback)
-        self._updateEvent.setCallback(callback, *args)
-        self.log(".attachEvent(read, "+str(callback)+", "+list(args)+")")
-
-    def detachEvent(self, event):
-        self._updateEvent.reset()
-        self.log(".detachEvent()")

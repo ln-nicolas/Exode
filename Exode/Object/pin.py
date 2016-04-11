@@ -26,13 +26,8 @@ class DigPin(obj):
         self._listenThread = None
         self._writeThread = None
 
-        self._event = {
-        "switch" : CallBack(),
-        "on" : CallBack(),
-        "off" : CallBack()
-        }
-
         obj.__init__(self, "digPin("+str(self._pin)+")")
+        self.setupEvent(["switch","on","off"])
 
     def setup(self, board):
         self.board = board
@@ -66,20 +61,20 @@ class DigPin(obj):
 
     def update(self, lvl):
         if self._lvl != lvl:
-            self._event["switch"].call()
+            self.event("switch").call()
             self.log(":switched")
         self._lvl = lvl
 
         if self._lvl == 1:
-            self._event["on"].call()
-            self._event["on"].off()
-            self._event["off"].on()
+            self.event("on").call()
+            self.event("on").off()
+            self.event("off").on()
             self.log(":on")
 
         if self._lvl == 0:
-            self._event["off"].call()
-            self._event["off"].off()
-            self._event["on"].on()
+            self.event("off").call()
+            self.event("off").off()
+            self.event("on").on()
             self.log(":off")
 
     def listen(self, period = 100):
@@ -113,15 +108,6 @@ class DigPin(obj):
         self._writeThread.stop()
         self.log(".stopPeriodic()")
 
-    def attachEvent(self, event, callback, *args):
-        self._event[event].setCallback(callback, *args)
-        self.log(".attachEvent("+event+", "+str(callback)+", "+str(args))
-
-    def detachEvent(self, event):
-        self._event[event].reset()
-        self.log(".detachEvent("+event+")")
-
-
 class AnaPin(obj):
 
     def __init__(self, pin, mode):
@@ -134,9 +120,9 @@ class AnaPin(obj):
         self.value = 0
 
         self._listenThread = None
-        self._updateEvent = CallBack()
 
         obj.__init__(self, "anaPin("+str(self._pin)+")")
+        self.setupEvent(["update"])
 
     def setup(self, board):
         self.board = board
@@ -149,7 +135,7 @@ class AnaPin(obj):
     def update(self, value):
         self.value = value
         self.log(":read "+value)
-        self._updateEvent.call()
+        self.event("update").call()
 
     def write(self, value):
         self.value = value
@@ -173,15 +159,6 @@ class AnaPin(obj):
             self._listenThread.stop()
             self._listenThread.start(period)
         self.log(".listen("+str(period)+")")
-
-    def attachEvent(self, event, callback, *args):
-        self._updateEvent.setCallback(callback, *args)
-        self.log(".attachEvent(read, "+", "+str(callback)+"("+list(args)+")")
-
-    def detachEvent(self):
-        self._updateEvent.reset()
-        self.stopListen()
-        self.log(".detachEvent(read)")
 
 
 class Button(DigPin):
