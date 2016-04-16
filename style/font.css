@@ -1,0 +1,30 @@
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  text-align: left;
+  color: whitesmoke;
+  font-size: 1em;
+}
+body b {
+  color: #61f3cf;
+}
+body p {
+  margin-top: 5%;
+  padding-left: 10%;
+}
+body .title-box {
+  text-align: left;
+}
+body .title-box h1 {
+  margin-left: 5%;
+  font-family: 'Archivo Narrow';
+  font-size: 3em;
+}
+pre {
+  width: 75%;
+  margin-left: 10% !important;
+  font-size: 0.85em;
+}
+pre code {
+  background: none !important;
+  box-shadow: none !important;
+}

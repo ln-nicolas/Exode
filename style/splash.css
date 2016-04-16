@@ -1,0 +1,83 @@
+#splash {
+  text-align: center;
+}
+#splash .github-button {
+  margin: 20px 0;
+}
+#splash #ard_py {
+  margin-top: 2.5%;
+  width: 40%;
+  margin-left: 30%;
+  opacity: 0.8;
+}
+#splash #ard_py img {
+  width: 15%;
+  padding: 5%;
+  display: inline-block;
+}
+#splash #ard_py p {
+  border: none;
+  padding: 0 !important;
+  margin-bottom: 5%;
+}
+#splash .button {
+  width: 100px;
+  display: inline-block;
+  text-align: center;
+  border: 2px dashed;
+  color: #2986a9;
+  border-radius: 100%;
+  height: 100px;
+  line-height: 100px;
+  margin-top: 10%;
+  transition: all 0.5s;
+}
+#splash .button:hover {
+  cursor: pointer;
+  color: #55ceb4;
+}
+#logo {
+  text-align: center;
+}
+#logo img {
+  width: 25%;
+  margin-top: 2.5%;
+  opacity: 0.9;
+  border-top: 2px solid white;
+  border-bottom: 2px solid white;
+  padding: 10px;
+}
+#logo p {
+  border: medium none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.6em;
+  opacity: 0.5;
+}
+#ker {
+  padding-top: 10%;
+}
+#ker .col {
+  width: 15%;
+  margin: 0 8.999%;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+}
+#ker .col img {
+  width: 45%;
+  padding: 25px;
+}
+#ker .col h2 {
+  font-family: 'Quicksand', sans-serif;
+  color: #61f3cf;
+  font-size: 1.2em;
+  font-weight: lighter;
+}
+#ker .col .text {
+  padding: 25% 0%;
+}
+#ker .col .text b {
+  color: white;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "exode-vitrine",
+  "description": "website",
+  "main": "/this",
+  "moduleType": [],
+  "authors": [
+    "LENSELLE Nicolas"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "motion-ui": "^1.2.2"
+  }
+}

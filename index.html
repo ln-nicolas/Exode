@@ -1,1 +1,190 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exode</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="style/main.css">
+
+    <link rel="stylesheet" type="text/css" href="style/prism.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/ionicons/css/ionicons.min.css">
+
+    <!-- threejs style -->
+    <style>
+			body { margin: 0; }
+			canvas {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        z-index: -10;
+      }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div id="background"></div>
+
+    <div id="splash" class="box">
+
+        <div id="logo">
+            <img src="assets/whiteLogo.png"/><br>
+            <p id="infVersion"> (beta) version 0.1 </p>
+        </div>
+
+        <div class="social-box">
+        <!-- Place this tag where you want the button to render. -->
+        <a aria-label="Star sne3ks/Exode on GitHub" data-count-aria-label="# stargazers on GitHub" data-count-api="/repos/sne3ks/Exode#stargazers_count" data-count-href="/sne3ks/Exode/stargazers" data-icon="octicon-star" href="https://github.com/sne3ks/Exode" class="github-button">Star</a>
+        <!-- Place this tag where you want the button to render. -->
+        <a aria-label="Follow @sne3ks on GitHub" data-count-aria-label="# followers on GitHub" data-count-api="/users/sne3ks#followers" data-count-href="/sne3ks/followers" href="https://github.com/sne3ks" class="github-button">Follow @sne3ks</a>
+        </div>
+
+        <div id="ard_py" class="text-box">
+            <img src="assets/python.png" />
+            <img src="assets/arduino.png" />
+
+            <p>
+                < Create <b>connected</b> objects />
+            </p>
+
+
+                        <pre><code class="language-python">from Exode import *
+uno = Board('/dev/tty.usb-3')
+
+led = Led(13)
+led.blink(500)
+                        </code></pre>
+        </div>
+
+
+    </div>
+
+    <div id="ker" class="box">
+
+        <div class="col">
+            <div class="logo">
+                <img src="assets/three.png"/>
+                <h2>Design for you</h2>
+            </div>
+
+            <div class="text">
+                Manipulate your components with <b>abstract class</b>,
+                using <b>event-driven</b> programming and <b>asynchronous</b> processes.
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="logo">
+                <img src="assets/tool.png"/>
+                <h2>No compilation</h2>
+            </div>
+
+            <div class="text">
+                Once your Arduino connected, execute your <b>script</b>
+                or take control trought a Python <b>console</b>.
+            </div>
+
+        </div>
+
+        <div class="col">
+            <div class="logo">
+                <img src="assets/sign.png"/>
+                <h2>Fully Open-source</h2>
+            </div>
+
+            <div class="text">
+                Because, there's strength in numbers, everybody can contribute to make Exode better
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <div id="started" class="box">
+        <h1>Get Started !</h1>
+
+
+        <div class="col">
+            <h2>Install Exode on your board</h2>
+
+            <ol>
+                <li> <a aria-label="Download sne3ks/ExodeArduinoCore on GitHub" data-icon="octicon-cloud-download" href="https://github.com/sne3ks/ExodeArduinoCore/archive/master.zip" class="github-button">Download</a> ExodeArduinoCore sources </li>
+                <li> Open Arduino Software and install <a href="https://www.arduino.cc/en/Guide/Libraries">ArduinoThread library</a></li>
+                <li> Open <span class="code"> ExodeArduinoCore\main\main.ino </span> with the Arduino Software, verify and load the code on your board </li>
+            </ol>
+
+            <h2>Install Exode on your computer</h2>
+            <ol>
+                <li>Into a terminal  <span class="code"> sudo pip3 install Exode </span> </li>
+            </ol>
+
+            If pip3 is not install go <a href="https://pip.pypa.io/en/latest/installing/">here</a>
+        </div>
+
+        <div class="col">
+            <h2>Find the path to your Arduino</h2>
+
+            <ol>
+                <li>Into a terminal launch a new python3 console <span class="code">python3</span> </li>
+            </ol>
+
+                                    <pre><code class="language-python">from Exode import *
+>> from Exode import *
+>> BOARD.search()
+>> ['/dev/tty.wchusbserial1420']
+                                    </code></pre>
+
+            <h2>Congratulation ! Exode's installed you can now write your first script </h2>
+
+                                    <pre><code class="language-python">from Exode import *
+uno = Board('/dev/tty.wchusbserial1420')
+led = Led(13)
+led.blink(500)
+                                    </code></pre>
+        </div>
+
+    </div>
+
+
+
+
+    <div id="nav">
+        <div class="nav-box selected " id="splash-button">
+            <i class="icon ion-flash"></i>
+        </div>
+        <div class="nav-box" id="ker-button">
+            <i class="icon ion-android-favorite"></i>
+        </div>
+        <div class="nav-box" id="started-button">
+            <i class="icon ion-ios-paperplane"></i>
+        </div>
+    </div>
+
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/three.js/build/three.min.js"></script>
+<script src="bower_components/jquery-mousewheel/jquery.mousewheel.min.js"></script>
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+<script src="bower_components/threex.windowresize/threex.windowresize.js"></script>
+<script src="src/prism.js"></script>
+<script src="src/3d.js"></script>
+<script src="src/ui.js"></script>
+
+<!-- fork-me label -->
+<a href="https://github.com/sne3ks/Exode"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+</body>
+
+</html>
