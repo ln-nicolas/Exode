@@ -182,3 +182,16 @@ body .box {
   opacity: 1;
   cursor: pointer;
 }
+.doc-link {
+  text-decoration: none;
+  color: #ffdf56;
+  opacity: 0.8;
+}
+.doc-link img {
+  height: 1.5em;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.doc-link:hover {
+  opacity: 1;
+}
