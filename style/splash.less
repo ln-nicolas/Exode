@@ -8,8 +8,10 @@
   //box du logo arduino et python
   #ard_py{
     margin-top: 2.5%;
-    width: 40%;
-    margin-left: 30%;
+
+    @media (min-width : 750px) { width: 40%; margin-left: 30%; }
+    @media (max-width : 750px) { width: 100%;}
+
     img{
       width: 15%;
       padding: 5%;

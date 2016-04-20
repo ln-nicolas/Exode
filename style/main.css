@@ -6,9 +6,18 @@
 }
 #splash #ard_py {
   margin-top: 2.5%;
-  width: 40%;
-  margin-left: 30%;
   opacity: 0.8;
+}
+@media (min-width: 750px) {
+  #splash #ard_py {
+    width: 40%;
+    margin-left: 30%;
+  }
+}
+@media (max-width: 750px) {
+  #splash #ard_py {
+    width: 100%;
+  }
 }
 #splash #ard_py img {
   width: 15%;
