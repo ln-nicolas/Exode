@@ -3,9 +3,9 @@ from .model import obj
 
 class L298N_MOTOR(obj):
 
-    def __init__(self, DC, IN1, IN2, speed=100):
+    def __init__(self, DC, IN1, IN2, speed=50):
 
-        self._dc = AnaPin(DC,'OUTPUT')
+        self._dc =  DigPin(DC,'OUTPUT')
         self._IN1 = DigPin(IN1,'OUTPUT')
         self._IN2 = DigPin(IN2,'OUTPUT')
 
@@ -29,7 +29,9 @@ class L298N_MOTOR(obj):
 
     def setSpeed(self, value):
         self._speed = value
-        self._dc.write(value)
+        self._speed = min(self._speed,100)
+        self._speed = max(self._speed,0)
+        self._dc.write((self._speed*255)/100)
         self.log(".speed("+str(value)+")")
 
     def setDirection(self, value):

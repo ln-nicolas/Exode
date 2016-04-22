@@ -1,6 +1,8 @@
 # Log init
 import logging
 import datetime
+import time
+
 current_time = datetime.datetime.now().time()
 
 
@@ -25,5 +27,7 @@ def logCore(msg):
 logger.info("Here we go !")
 
 from .callback import CallBack, Interrupt, Timer
-from .boardManager import Board
+from .boardManager import *
 
+def delay(ms):
+    time.sleep(ms/1000)

@@ -52,10 +52,6 @@ class ExodeSpeaker :
 
         return self.speak(bytearray([fct('pinMode'), pin, mode, ana]))
 
-    def anaPinMode(self, pin, mode):
-        mode= _VARIABLES[mode]
-        return self.speak(bytearray([fct('anaPinMode'), pin, mode]))
-
     def digitalWrite(self, pin, lvl):
         lvl = _VARIABLES[lvl]
         return self.speak(bytearray([fct('digitalWrite'), pin, lvl]))

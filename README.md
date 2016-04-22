@@ -1,7 +1,7 @@
 # Exode
 *version : beta 0.4*
 
-<p align="center"><img src="logo.png" ></p>
+<p align="center"><img src="whiteLogoBeta.png" ></p>
 <p align="center"><img src="python.png" ></p>
 <p align="center"><img src="arduino.png" ></p>
 
