@@ -1,16 +1,12 @@
 # Exode
 *version : beta 0.4*
 
-<p align="center"><img src="whiteLogoBeta.png" ></p>
+<p align="center"><img src="logo.png" ></p>
 <p align="center"><img src="python.png" ></p>
 <p align="center"><img src="arduino.png" ></p>
 
 
 Python's library for communication between Arduino microcontroller boards and a connected computer. Write Python script and take control on your board using a serial IO.
-
-
-## Well, What is it ?
-> Here, a code to blink a led
 
 ```python
 from Exode import *
@@ -21,9 +17,7 @@ led = Led(13)
 led.blink(500)
 ```
 
-Exode is a Python's library for communication between
-Arduino microcontroller boards and a connected computer.
-Write Python script and take control on your board using a serial IO.
+[Documentation](http://sne3ks.github.io/ExodeDoc/)
 
 ##  Fast and Intuitive
 
@@ -31,11 +25,11 @@ Exode was designed to simplify the development of Arduino projects. The library
 take advantages from the clear and light Python's syntax.
 
 Once your Arduino connected to your device (computer, Rasberry Pi, smartphone ..)
-using a serial IO (usb/bluetooth), you'r now allowed to have remote interactions
+using a serial IO (usb/bluetooth), you're now allowed to have remote interactions
 with your board.
 
-You microcontroller become a simple slave, let your computer process the more
-complexe tasks. You may add artificial intelligence algorithm in your projects...
+You microcontroller become a simple slave, let your computer process the most
+complex tasks. You may add artificial intelligence algorithm in your projects...
 
 ## Powerfull tools
 
