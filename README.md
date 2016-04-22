@@ -1,5 +1,10 @@
 # Exode
-*version : beta 0.3*
+*version : beta 0.4*
+
+<p align="center"><img src="logo.png" ></p>
+<p align="center"><img src="python.png" ></p>
+<p align="center"><img src="arduino.png" ></p>
+
 
 Python's library for communication between Arduino microcontroller boards and a connected computer. Write Python script and take control on your board using a serial IO.
 
@@ -42,7 +47,7 @@ Exode use event-driven programming to manage the interactions between the differ
 components plugged on your board, or your computer it-self.
 > Event withe the HCSR04
 
-```python 
+```python
 from Exode import *
 uno = Board('/dev/tty.HC-06-DevB')
 
