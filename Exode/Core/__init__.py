@@ -3,28 +3,33 @@ import logging
 import datetime
 import time
 
-current_time = datetime.datetime.now().time()
+from io import StringIO
 
+current_time = datetime.datetime.now().time()
 
 logging.addLevelName(9, "core")
 logging.addLevelName(8, "obj")
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
-handler = logging.FileHandler('Exode-'+current_time.isoformat()+'.log')
-#handler.setLevel(logging.DEBUG)
+LOG_PATH = 'Exode-'+current_time.isoformat()+'.log'
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s|%(name)s|%(message)s')
+handler = logging.FileHandler(LOG_PATH)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def logObj(msg):
-    logger.debug("OBJC - "+msg)
-def logCore(msg):
-    logger.debug("CORE - "+msg)
+    logger.debug("OBJC|"+msg)
 
-logger.info("Here we go !")
+def logCore(msg):
+    logger.debug("CORE|"+msg)
+
+def logPy(msg):
+    logger.debug("PYTH|"+msg)
+
+logger.info("INFO|Here we go!")
 
 from .callback import CallBack, Interrupt, Timer
 from .boardManager import *

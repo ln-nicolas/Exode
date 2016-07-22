@@ -6,7 +6,7 @@
 #   lenselle.nicolas@gmail.com
 
 
-# import to search port connected to a board
+# imports to search port connected to a board
 import itertools
 import platform
 from serial.tools import list_ports
@@ -135,4 +135,3 @@ class Board(Exode):
         return self.name
 
 BOARD= BoardManager()
-#BOARD = BOARD_MANAGER.searchBoard()

@@ -148,6 +148,9 @@ class Exode(ExodeSpeaker, ExodeListener):
 
     def __init__(self, port, name=""):
         self.port = serial.Serial(port, 9600)
+
+        ## Add an exeption here ..
+
         ExodeSpeaker.__init__(self, self.port, name)
         ExodeListener.__init__(self, self.port, name)
 

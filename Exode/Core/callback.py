@@ -13,10 +13,9 @@ import time
 
 class CallBack:
 
-    def __init__(self, function=None, activate=True, *args):
+    def __init__(self, function=None, activate=True):
         self._fc = function
         self._on = activate
-        self._args = args
 
     def isOn(self):
         return self._on
@@ -30,22 +29,18 @@ class CallBack:
     def off(self):
         self._on = False
 
-    def setCallback(self, function, *args):
+    def setCallback(self, function):
         self._fc = function
-        self._args = args
-        if len(args) == 0:
-            self._args = None
         self._on = True
 
     def reset(self):
         self._fc = None
-        self._args = None
         self.on = False
 
-    def call(self):
+    def call(self, *args):
         if self._fc != None and self.isOn():
-            if self._args != None:
-                return self._fc(*self._args)
+            if args != None:
+                return self._fc(*args)
             else:
                 return self._fc()
 

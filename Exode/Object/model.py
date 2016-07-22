@@ -2,15 +2,31 @@ from ..Core import *
 from ..Core.boardManager import *
 from ..Core.callback import *
 
+def uix_updater(func):
+    def wrapper(self, *args):
+        val = func(self, *args)
+
+        for view in self.ui_view:
+            view.update()
+
+        return val
+    return wrapper
+
 class obj:
 
-    def __init__(self, signature, autoLoad=True):
-        self.signature= signature
+    def __init__(self, name, autoLoad=True, pins=[], type="obj"):
+
+        self.name= name
+        self.pins= pins
+        self.type= type
+
+        self.ui_view= []
+
         if autoLoad:
             BOARD.autoAddObj(self)
 
     def __repr__(self):
-        return str(self.board)+"."+self.signature
+        return str(self.board)+"."+self.name
 
     def log(self, msg):
         logObj(str(self)+msg)
@@ -28,6 +44,13 @@ class obj:
         if not event in self._event:
             logCore(event+" is not defined on "+str(self))
         self._event[event].setCallback(callback, *args)
+
+    @uix_updater
+    def attachView(self, view):
+        self.ui_view.append(view)
+
+    def setPlot(self, plot):
+        self._plot= plot
 
     def event(self, event):
         return self._event[event]
