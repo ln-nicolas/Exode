@@ -9,7 +9,7 @@ class ExdRealTimeGraph(GridLayout):
     def __init__(self, name, color=[0.06, 0.25, 0.49, 1], **kwargs):
 
         GridLayout.__init__(self, size_hint=(None, None),
-                              width=260, height=260,
+                              width=250, height=250,
                               rows=3,
                               padding= (0,0),
                               **kwargs)
@@ -22,7 +22,7 @@ class ExdRealTimeGraph(GridLayout):
         self.graph= Graph(x_ticks_minor=5,
         x_ticks_major=500, y_ticks_major=500, ylabel='y',
         y_grid_label=True, x_grid_label=False, padding=5,
-        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=0, ymax=1000,
+        x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-1.5, ymax=1.5,
         size_hint=(0.8, 0.8))
 
         self.data= ExdLabel(size_hint=(1,0.1), bgcolor=[0.10, 0.13, 0.15, 1],
@@ -45,8 +45,8 @@ class ExdRealTimeGraph(GridLayout):
         _ymin = min([ t[1] for plot in graph.plots for t in plot.points if t[0]>(_xmax-5000)])
         _ymax = max([ t[1] for plot in graph.plots for t in plot.points if t[0]>(_xmax-5000)])
 
-        graph.xmax=_xmax+200
-        graph.xmin=_xmax-5000
+        graph.xmax=_xmax+0.1
+        graph.xmin=_xmax-2
         graph.y_ticks_major = round((graph.ymax - graph.ymin)/10,0)
 
 

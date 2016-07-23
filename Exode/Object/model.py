@@ -26,7 +26,10 @@ class obj:
             BOARD.autoAddObj(self)
 
     def __repr__(self):
-        return str(self.board)+"."+self.name
+        if not hasattr(self, 'board'):
+            return self.name
+        else:
+            return str(self.board)+"."+self.name
 
     def log(self, msg):
         logObj(str(self)+msg)
@@ -36,6 +39,13 @@ class obj:
             self.setup(board)
         return self
 
+    @uix_updater
+    def attachView(self, view):
+        self.ui_view.append(view)
+
+    def setPlot(self, plot):
+        self._plot= plot
+
     def setupEvent(self, eventList):
         self._event= {event:CallBack() for event in eventList}
 
@@ -44,13 +54,6 @@ class obj:
         if not event in self._event:
             logCore(event+" is not defined on "+str(self))
         self._event[event].setCallback(callback, *args)
-
-    @uix_updater
-    def attachView(self, view):
-        self.ui_view.append(view)
-
-    def setPlot(self, plot):
-        self._plot= plot
 
     def event(self, event):
         return self._event[event]

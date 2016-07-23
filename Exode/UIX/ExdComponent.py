@@ -4,38 +4,22 @@ from kivy.properties      import ObjectProperty, StringProperty, NumericProperty
 from kivy.uix.textinput   import TextInput
 
 from ..Core.callback import CallBack
+from ..Object.obj import AbstractObj
 
 class ExdViewer(GridLayout):
     value = StringProperty("-")
     bgcolor = ListProperty([0.06, 0.25, 0.49, 1])
 
-    def __init__(self, obj, color=[0.06, 0.25, 0.49, 1], **kwargs):
+    def __init__(self, obj, **kwargs):
 
         self.obj= obj
-        self.bgcolor= color
+        self.bgcolor= kwargs.get('color', obj.color)
         obj.attachView(self)
 
         super(ExdViewer, self).__init__(**kwargs)
 
-    def updateDigPin(self):
-        if self.obj._period != -1:
-            if self.obj._mode == 1:
-                self.value = "[b] periodic switch [/b]\n"+str(self.obj._period)+" ms"
-
-        else:
-            if self.obj._lvl == 1: self.value = "[size=25][b]HIGH[/b][/size]"
-            else: self.value = "[size=25][b]LOW[/b][/size]"
-
-    def updateAnaPin(self):
-        if self.obj._period == -1:
-            self.value = "value \n[b]"+str(self.obj.value)+"[/b]"
-        else:
-            self.value = "value \n[b]" + str(self.obj.value) + "[/b]\n listen " + str(self.obj._period) + "ms"
-
     def update(self):
-
-        if(self.obj.type=="DigPin"): self.updateDigPin()
-        if(self.obj.type=="AnaPin"): self.updateAnaPin()
+        self.value= self.obj.getUIXView()
 
 Builder.load_string('''
 <ExdViewer>:
@@ -118,26 +102,43 @@ Builder.load_string('''
 class ExdSlider(GridLayout):
     bgcolor = ListProperty([0.06, 0.25, 0.49, 1])
 
-    def __init__(self, minv, maxv, value,
-                       callback,
+    def __init__(self, minv, maxv,
+                       target,
                        name,
-                       color=[0.06, 0.25, 0.49, 1],
+                       valueName=None,
                        **kwargs):
-        self.cb = CallBack(callback)
-        self.bgcolor= color
 
         self.name = name
         self.min= minv
         self.max= maxv
-        self.value= value
+        self.value= kwargs.get('value', int((maxv-minv)/2))
+
+        self.valueName= valueName
+
+        if not hasattr(target, '__call__'):
+            self.obj= target
+            target.attachView(self)
+            self.cb = CallBack(self.obj.setValue)
+            self.bgcolor= target.color
+        else:
+            self.cb = CallBack(target)
+
+        if 'color' in kwargs:
+            self.bgcolor= kwargs.get('color')
 
         super(ExdSlider, self).__init__(**kwargs)
+
+    def update(self):
+        value= self.obj.getValue(self.valueName)
+        if value >= self.min and value <= self.max and value != self.value:
+            self.value= value
+            self.ids.slider.value= value
 
     def on_value(self, value):
         if value != self.value:
             self.value= value
             self.ids.slider.value= value
-            self.cb.call(value)
+            self.cb.call(value, self.valueName)
 
 Builder.load_string('''
 <ExdSlider>:
@@ -194,12 +195,103 @@ Builder.load_string('''
         on_text_validate: root.on_value(int(self.text))
 ''')
 
+
+
+class ExdRadio(GridLayout):
+    bgcolor = ListProperty([0.06, 0.25, 0.49, 1])
+
+    def __init__(self, target, name, valueName=None, **kwargs):
+
+        self.name = name
+        self.value= kwargs.get('value', False)
+
+        self.valueName= valueName
+
+        super(ExdRadio, self).__init__(**kwargs)
+
+        if not hasattr(target, '__call__'):
+            self.obj= target
+            target.attachView(self)
+            self.cb = CallBack(self.obj.setValue)
+            self.bgcolor= target.color
+        else:
+            self.cb = CallBack(target)
+
+        if 'color' in kwargs:
+            self.bgcolor= kwargs.get('color')
+
+
+    def update(self):
+        value= self.obj.getValue(self.valueName)
+        if value == 1: value= True
+        else: value= False
+
+        if self.value != value:
+            self.value= value
+            self.ids.checkbox.active= value
+
+    def on_value(self):
+        self.value= not self.value
+        self.cb.call(self.value, self.valueName)
+
+
+Builder.load_string('''
+<ExdRadio>:
+    rows: 3
+    size: 130, 130
+    size_hint: None, None
+
+    ExdLabel:
+        id: name
+        bgcolor: root.bgcolor
+        font_size: 13
+        markup: True
+        text: "#"+root.name
+        valign: "top"
+        halign: "left"
+        size_hint: 1, 0.2
+
+    CheckBox:
+        id: checkbox
+        active: root.value
+        bgcolor: 0.25, 0.56, 0.72, 0.8
+
+        on_active: root.on_value()
+        size_hint: 1, 0.6
+
+        canvas.before:
+            Color:
+                rgb: 0.10, 0.13, 0.15, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+    ExdLabel:
+        id: value
+
+        size_hint: 1, 0.2
+        line_height: root.height*0.2
+
+        background_color: root.bgcolor
+        foreground_color: 1, 1, 1, 1
+
+        background_normal: ""
+        background_disabled_normal:""
+        background_active: ""
+
+
+        font_size: 13
+        multiline:False
+
+        text: str(int(checkbox.active))
+''')
+
 from kivy.uix.button import Button
 
 class ExdPushButton(GridLayout):
     bgcolor = ListProperty([0.06, 0.25, 0.49, 1])
 
-    def __init__(self, callback, name, color=[0.06, 0.25, 0.49, 1],**kwargs):
+    def __init__(self, callback, name, **kwargs):
 
         self.name= name
         self.bgcolor= color

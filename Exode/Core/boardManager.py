@@ -123,8 +123,7 @@ class Board(Exode):
             self= BOARD.getBoardByPort(port)
 
     def add(self, obj):
-        if(obj.board == None):
-            obj.on(self)
+        obj.on(self)
 
     def addObject(self, name, values):
         if not name in self.objLst.keys():

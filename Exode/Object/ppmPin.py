@@ -1,4 +1,4 @@
-from .model import obj
+from .model import obj, uix_updater
 
 _VARIABLES = {
     0:0,
@@ -36,6 +36,9 @@ class ppmPin(obj):
         # When we receive the thread id we can write the pulsation
         self.write(self._ppmUs)
 
+    def getPPMUS(self):
+        return self._ppmUs
+
     def init(self):
         if self._ppmThread == -1:
             key = self.board.getKey()
@@ -56,7 +59,10 @@ class ppmPin(obj):
 
 class Servo(ppmPin, obj):
 
-    def __init__(self, pin, angle= 90, minAngle= 0, maxAngle= 180, zeroUs= 1000, angleToUs=5.555):
+    def __init__(self, pin, angle= 90,
+                            minAngle= 0, maxAngle= 180,
+                            zeroUs= 1000, angleToUs=5.555,
+                            name= None):
 
         self._minAngle = minAngle
         self._maxAngle = maxAngle
@@ -67,7 +73,13 @@ class Servo(ppmPin, obj):
         self._angle = angle
 
         ppmPin.__init__(self, pin, self.angleToUs())
-        obj.__init__("servo("+str(pin)+")", autoLoad=False)
+
+        if name == None: name = "servo("+str(pin)+")"
+        obj.__init__(self, name, type="Servo", pins=[pin], autoLoad=False)
+
+        ## Compatibility with UIX
+        self.controller= self.write
+        self.getValue  = self.getAngle
 
     def angleToUs(self):
         return int(self._zeroUs + self._angle * self._angleToUs )
@@ -86,11 +98,16 @@ class Servo(ppmPin, obj):
         self.stop()
         self.log(".stop()")
 
+    def getAngle(self):
+        return self._angle
+
+    @uix_updater
     def write(self, angle):
         if angle >= self._minAngle and angle <= self._maxAngle:
             self._angle = angle
             ppmPin.write(self, self.angleToUs())
             self.log(".write("+str(angle)+")")
+
 
     def writeUs(self, us):
         ppmPin.write(self, us)

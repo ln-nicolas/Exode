@@ -1,69 +1,65 @@
-from ..Core.callback import *
 from .model import obj, uix_updater
 
+from .obj import BoardObj, DataObj, uix_view_update
+
 _VARIABLES = {
-    0:0,
-    1:1,
-    'OUTPUT':1,
-    'INPUT':0,
-    'HIGH':1,
-    'LOW': 0,
-    'ON':1,
-    'OFF':0,
+    0:0, 1:1,
+    'OUTPUT':1, 'INPUT':0,
+    'HIGH':1, 'LOW': 0,
+    'ON':1, 'OFF':0,
 }
 
-class DigPin(obj):
+class DigPin(BoardObj, DataObj):
 
-    def __init__(self, pin, mode, analogic=False, name=None, **kwargs):
-
-        self.board = None
+    def __init__(self, pin, mode, analogic=False, **kwargs):
 
         self._pin = pin
         self._mode = _VARIABLES[mode]
-        self._analog=analogic
+        self._analog = analogic
 
         self._lvl = 0
         self._period = -1
-
-        self._time = 0
-        self._plot = None
+        self._value = -1
 
         self._listenThread = None
-        self._writeThread = None
+        self._writeThread  = None
 
-        if name == None : name= "digPin("+str(self._pin)+")"
-        obj.__init__(self, name, type="DigPin", pins=[pin], **kwargs)
+        name= kwargs.get('name', "digPin({})".format(pin))
+        BoardObj.__init__(self, name, pins=[pin], **kwargs)
+        DataObj.__init__(self)
 
-        self.setupEvent(["switch","on","off"])
+        self.type= "DigPin"
+
+        self.setupEvent(["switch", "on", "off"])
 
     def setup(self, board):
         self.board = board
         board.add(self)
 
-        board.addObject("digPin",self)
+        board.addObject("digPin", self)
         board.pinMode(self._pin, self._mode, analogic=self._analog)
         self.log(".mode("+str(self._mode)+")")
 
-    @uix_updater
+    @uix_view_update
     def mode(self, mode):
         self._mode = mode
         self.board.pinMode(self._pin, mode, analogic=self._analog)
         self.log(".mode("+str(self._mode)+")")
 
-    @uix_updater
+    @uix_view_update
     def write(self, lvl):
         if self._mode == 1:
             self._lvl = _VARIABLES[lvl]
             self.board.digitalWrite(self._pin, self._lvl)
             self.log(".write("+str(self._lvl)+")")
 
-    @uix_updater
+    @uix_view_update
     def analogWrite(self, value):
-        self.value = value
-        self.board.analogWrite(self._pin, self.value)
+        self._value = value
+        self.board.analogWrite(self._pin, value)
         self.log(".analogWrite("+str(value)+")")
 
-    @uix_updater
+    @uix_view_update
     def switch(self):
         self.board.digitalSwitch(self._pin)
         self._lvl = (self._lvl + 1)%2
@@ -75,11 +71,12 @@ class DigPin(obj):
         self.board.addListener(key= key, updateFunction=self.update)
         self.log(".read()")
 
-    @uix_updater
+    @uix_view_update
     def update(self, lvl):
         if self._lvl != lvl:
             self.event("switch").call()
             self.log(":switched")
+
         self._lvl = lvl
 
         if self._lvl == 1:
@@ -94,14 +91,16 @@ class DigPin(obj):
             self.event("on").on()
             self.log(":off")
 
-        if self._period != -1 and self._plot != None:
-            self._time+= self._period
-            self._plot.points.append((self._time, lvl))
+        self.appendData(lvl)
 
     def listen(self, period = 100):
         self._period= period
 
-        if self._listenThread == None:
+        if period==0:
+            self.stopListen()
+            return
+
+        if self._listenThread is None:
             key = self.board.getKey()
             self._listenThread = self.board.newThread()
             self._listenThread.add('digitalRead', self._pin, key)
@@ -114,13 +113,19 @@ class DigPin(obj):
         self.log(".listen("+str(period)+")")
 
     def stopListen(self):
-        self._listenThread.stop()
         self._period= -1
+        if self._listenThread is None:
+            return
+        self._listenThread.stop()
         self.log(".stopListen()")
 
-    @uix_updater
+    @uix_view_update
     def periodicSwitch(self, period):
         self._period= period
+
+        if period == 0:
+            self.stopPeriodicSwitch()
+            return
 
         if self._writeThread == None:
             self._writeThread = self.board.newThread()
@@ -131,11 +136,44 @@ class DigPin(obj):
             self._writeThread.start(period)
         self.log(".periodicSwitch("+str(period)+")")
 
-    @uix_updater
+    @uix_view_update
     def stopPeriodicSwitch(self):
+        self._period= -1
+        if self._writeThread is None:
+            return
         self._writeThread.stop()
         self._period= -1
         self.log(".stopPeriodic()")
+
+    ### UIX compatibility
+
+    def getUIXView(self):
+        if self._period != -1:
+            if self._mode == 1:
+                return "[b] periodic switch [/b]\n {:d} ms".format(self._period)
+            else:
+                return "[b][size=20]{:d}[/size] \n periodic listen [/b]\n {:d}ms".format(self._lvl, self._period)
+        else:
+            if self._lvl == 1: return "[size=25][b]HIGH[/b][/size]"
+            else: return "[size=25][b]LOW[/b][/size]"
+
+    def setValue(self, value, name):
+        if name == "period":
+            self.periodicSwitch(value)
+
+        if name is None:
+            if self._analog:
+                self.analogWrite(value)
+            else:
+                self.write(value)
+
+    def getValue(self, name):
+        if name=="period": return self._period
+        else:
+            if self._analog:
+                return self._value
+            else:
+                return self._lvl
 
 class AnaPin(obj):
 
@@ -211,6 +249,12 @@ class AnaPin(obj):
         self.log(".stopListen()")
         self._period = -1
 
+    def getUIXView(self):
+        if self._period == -1:
+            return "value \n[b]{:d}[/b]".format(self.value)
+        else:
+            return "value \n[b]{:d}[/b]\n listen {:d} ms".format(self.value, self._period)
+
 class Button(DigPin):
 
     def __init__(self, pin, **kwargs):
@@ -221,6 +265,7 @@ class Led(DigPin):
 
     def __init__(self, pin, **kwargs):
         DigPin.__init__(self, pin, 'OUTPUT', **kwargs)
+        self.type= "Led"
 
     def blink(self, period):
         self.periodicSwitch(period)

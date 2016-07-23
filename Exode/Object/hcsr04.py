@@ -1,9 +1,9 @@
 from .pin import *
-from .model import obj
+from .model import obj, uix_updater
 
 class HCSR04(obj):
 
-    def __init__(self, echo, trig):
+    def __init__(self, echo, trig, name=None):
 
         self._trig = DigPin(trig, 'OUTPUT')
         self._echo = DigPin(echo, 'INPUT')
@@ -16,9 +16,15 @@ class HCSR04(obj):
 
         self.duration = -1
         self.cm = -1
+        self._time = 0
 
-        obj.__init__(self, "HCSR04(trig="+str(self._trig)+", echo="+str(self._echo)+")")
+        if name==None: name= "HCSR04(trig={:d}, echo={:d})".format(trig, echo)
+
+        obj.__init__(self, name, type="HCSR04", pins=[echo, trig])
         self.setupEvent(["update"])
+
+        ##UIX Compatibility
+        self.getValue= self.getDistance
 
     def setup(self, board):
         self.board = board
@@ -32,13 +38,25 @@ class HCSR04(obj):
         self.board.addListener(key=self._readKey, updateFunction=self.update, isInfinite= True)
         self.log(".setup() key="+str(self._readKey))
 
-
+    @uix_updater
     def update(self, duration):
+
+        #error
+        if duration > 26000:
+            return
+
         self.duration = duration
         self.cm = round(duration/58.2, 2)
 
-        self.log(":update duration="+str(duration)+" cm="+str(cm))
+        self.log(":update duration="+str(duration)+" cm="+str(self.cm))
         self.event("update").call()
+
+        if self._period != -1 and self._plot != None:
+            self._time+= self._period
+            self._plot.points.append((self._time, self.cm))
+
+    def getDistance(self):
+        return self.cm
 
     def read(self, period=0):
         self._period = period
@@ -48,3 +66,6 @@ class HCSR04(obj):
     def stopRead(self):
         self._readThread.stop()
         self.log(".stopRead()")
+
+    def getUIXView(self):
+        return "[b]{:f}cm[/b]".format(self.cm)

@@ -34,5 +34,6 @@ logger.info("INFO|Here we go!")
 from .callback import CallBack, Interrupt, Timer
 from .boardManager import *
 
-def delay(ms):
-    time.sleep(ms/1000)
+START_TIME = time.time()
+def EXD_TIME():
+    return round(time.time() - START_TIME, 3)
