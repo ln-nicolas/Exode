@@ -1,9 +1,10 @@
 # Exode
 *version : beta 0.4*
 
-<p align="center"><img src="logo.png" ></p>
-<p align="center"><img src="python.png" ></p>
-<p align="center"><img src="arduino.png" ></p>
+<p align="center"><img src="img/logo.png" ></p>
+<p align="center"><img src="img/showcase.gif" ></p>
+<p align="left"><img src="img/python.png" ></p>
+<p align="right"><img src="img/arduino.png" ></p>
 
 
 Python's library for communication between Arduino microcontroller boards and a connected computer. Write Python script and take control on your board using a serial IO.
@@ -37,9 +38,32 @@ complex tasks. You may add artificial intelligence algorithm in your projects...
 Many of Arduino components are implemented in Exode, that's way you can directly
 manipulate them with Python.
 
+### User graphic interface
+
+Interact with your object rapidly and simply through the Exode User interface.
+
+> Control led13 with a switchBox
+
+```python
+from Exode     import *
+from Exode.UI  import *
+
+uno= Board('/dev/cu.wchusbserial1410')
+led= Led(13)
+
+switchBox= ExdSwitchBox(target=led, value="lvl")
+radioBox = ExdRadioBox(target=led, title="Led13", value="lvl")
+
+APP.STACK.add_widget(switchBox)
+APP.STACK.add_widget(radioBox)
+```
+
+### Event-driven programming
+
 Exode use event-driven programming to manage the interactions between the differents
 components plugged on your board, or your computer it-self.
-> Event withe the HCSR04
+
+> Event with the HCSR04
 
 ```python
 from Exode import *
@@ -66,6 +90,7 @@ hcsr.read(1000)
 >> ..
 
 ```
+### Asynchronous Process
 
 Furthermore, the Exode's kernel is based on a asynchronous processes,
 greatly simplifying your project !!
