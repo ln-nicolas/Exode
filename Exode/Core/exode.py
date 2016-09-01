@@ -1,7 +1,7 @@
 #   exode.py
 #
-#   Exode is an object to facilitate the communication
-#   between your python script and an Arduino Board.
+#   Exode is an interface between python scripts
+#   and an Arduino Board.
 #
 #   A program compiled on the Arduino board is able
 #   to decode the instructions sending by Exode
@@ -17,9 +17,11 @@ import serial
 import time
 import _thread
 
-from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, fct
+from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, ID
 from .listener import valueListener
 from . import logCore
+
+from .Instructions.exodeSet import exodeInstructionSet
 
 class ExodeSpeaker :
 
@@ -32,62 +34,56 @@ class ExodeSpeaker :
         if not hasattr(self, 'name'):
             self.name= name
 
+        self.addInstructionSet(exodeInstructionSet, 0)
 
-    def speak(self, byteArray):
+
+    def sendByteArray(self, byteArray):
         # 1st byte : lenght of the instruction
         protocolArray = bytearray([len(byteArray)]) + byteArray
-        logCore("speaker-"+self.name+" send "+_INV_FUNCTIONS[int(byteArray[0])]+" : "+str(list(protocolArray)))
+        #logCore("speaker-"+self.name+" send "+_INV_FUNCTIONS[int(byteArray[0])]+" : "+str(list(protocolArray)))
+        logCore("speaker-"+self.name+" send "+" : "+str(list(protocolArray)))
 
         if not self.mute:
             self.port.write(protocolArray)
 
         return protocolArray
 
-    def pinMode(self, pin, mode, analogic=False):
-        mode = _VARIABLES[mode]
+    # Send a list of typed args on the board
+    def send(self, *args):
 
-        ana=0
-        if analogic:
-            ana=1
+        byteArray = bytearray([])
+        for arg in args:
 
-        return self.speak(bytearray([fct('pinMode'), pin, mode, ana]))
+            type = arg[0]
+            value = arg[1]
 
-    def digitalWrite(self, pin, lvl):
-        lvl = _VARIABLES[lvl]
-        return self.speak(bytearray([fct('digitalWrite'), pin, lvl]))
+            if type == 'byte':
+                byteArray += bytearray([value])
+            elif type == 'long' :
+                byteArray += bytearray(value.to_bytes(4, 'little'))
 
-    def digitalRead(self, pin, key):
-        return self.speak(bytearray([fct('digitalRead'), pin, key]))
+        return self.sendByteArray(byteArray)
 
-    def digitalSwitch(self, pin):
-        return self.speak(bytearray([fct('digitalSwitch'), pin]))
+    # Return a method calling an instruction on the board
+    def makeInstructionMethod(self, set_id, instruction_id, instruction_types):
+        def method(self, *args):
 
-    def analogWrite(self, pin, value):
-        return self.speak(bytearray([fct('analogWrite'), pin, value]))
+            typed_arg = [('byte', set_id), ('byte', instruction_id)]
+            for i in range(0, len(args)):
+                typed_arg.append((instruction_types[i], args[i]))
 
-    def analogRead(self, pin, key):
-        return self.speak(bytearray([fct('analogRead'), pin, key]))
+            return self.send(*typed_arg)
 
-    def addPPM(self, pin, us, key):
-        microUs = bytearray(us.to_bytes(4, 'little'))
-        return self.speak(bytearray([fct('addPPM'), pin, key])+microUs)
+        return method
 
-    def removePPM(self, id):
-        return self.speak(bytearray([fct('removePPM'), id]))
+    def addInstructionSet(self, set, set_id):
 
-    def writePPM(self, id, us):
-        microUs = bytearray(us.to_bytes(4, 'little'))
-        return self.speak(bytearray([fct('writePPM'), id])+microUs)
+        for inst in set.instructions:
+            inst_id    = inst[0]
+            name  = inst[1]
+            types = inst[2]
+            setattr(ExodeSpeaker, name, self.makeInstructionMethod(set_id, inst_id, types))
 
-    def pulse(self, pin, us):
-        byteUs = bytearray(us.to_bytes(4,'little'))
-        return self.speak(bytearray([fct('pulse'), pin])+byteUs)
-
-    def pulseIn(self, pin, key):
-        return self.speak(bytearray([fct('pulseIn'), pin, key]))
-
-    def reset(self):
-        return self.speak(bytearray([fct("reset")]))
 
 class ExodeListener:
 
@@ -144,12 +140,11 @@ class ExodeListener:
         self.isRun = False
 
 
+from .boardThread import *
 class Exode(ExodeSpeaker, ExodeListener):
 
     def __init__(self, port, name=""):
         self.port = serial.Serial(port, 9600)
-
-        ## Add an exeption here ..
 
         ExodeSpeaker.__init__(self, self.port, name)
         ExodeListener.__init__(self, self.port, name)
@@ -157,8 +152,8 @@ class Exode(ExodeSpeaker, ExodeListener):
         #Otherwise, the arduino automatically resets..
         time.sleep(2)
 
+
     def newThread(self):
-        from .boardThread import boardThread
         return boardThread(self)
 
     def wait(self,period=False):

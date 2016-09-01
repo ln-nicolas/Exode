@@ -1,9 +1,14 @@
-from .pin import *
-from .model import obj
+#   l298n.py
+#
+#   Created by Lenselle Nicolas, January, 2016.
+#   lenselle.nicolas@gmail.com
 
-class L298N_MOTOR(obj):
+from .pin   import *
+from .obj   import BoardObj, uix_view_update
 
-    def __init__(self, DC, IN1, IN2, speed=50):
+class L298N_MOTOR(BoardObj):
+
+    def __init__(self, DC, IN1, IN2, speed=50, **kwargs):
 
         self._dc =  DigPin(DC,'OUTPUT')
         self._IN1 = DigPin(IN1,'OUTPUT')
@@ -15,16 +20,19 @@ class L298N_MOTOR(obj):
         self._direction = 1
         self.isRunning = False
 
-        obj.__init__(self, "L298N_MOTOR(DC={self._dc}, IN1={self._IN1}, IN2={self._IN2} )".format(self=self))
+        name= kwargs.get('name',"L298N_MOTOR(DC={self._dc}, IN1={self._IN1}, IN2={self._IN2} )".format(self=self))
+        BoardObj.__init__(self, name, pins=[DC, IN1, IN2])
+
+        self.type= "L298N"
 
     def setup(self, board):
 
-        self._dc.on(board)
-        self._IN1.on(board)
-        self._IN2.on(board)
+        board.add(self)
+        board.add(self._dc)
+        board.add(self._IN1)
+        board.add(self._IN2)
 
         self._dc.write(self._speed)
-        self.board = board
         self.log(".setup()")
 
     def setSpeed(self, value):
@@ -72,3 +80,32 @@ class L298N_MOTOR(obj):
 
         self.isRunning = False
         self.log(".stop()")
+
+    ### UIX compatibility
+    def getUIXView(self):
+        di= "forward"
+        if self._direction == -1: di= "backward"
+        if not self.isRunning: di= "stop"
+        return '''{:s}
+                  [b]{:f} %[/b]'''.format(di, self._speed)
+
+    def setValue(self, value, name):
+        if name == "isRunning":
+            if value: self.run()
+            else: self.stop()
+
+        if name == "speed":
+            self.setSpeed(value)
+
+        if name == "direction":
+            self.setDirection(value)
+
+    def getValue(self, name):
+        if name == "isRunning":
+            return self.isRunning
+
+        if name == "speed":
+            return self._speed
+
+        if name == "direction":
+            return self._direction

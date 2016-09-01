@@ -1,35 +1,37 @@
+#   hcsr04.py
+#
+#   Created by Lenselle Nicolas, January, 2016.
+#   lenselle.nicolas@gmail.com
+
 from .pin import *
-from .model import obj, uix_updater
+from .obj import BoardObj, uix_view_update
 
-class HCSR04(obj):
+class HCSR04(BoardObj, DataObj):
 
-    def __init__(self, echo, trig, name=None):
+    def __init__(self, echo, trig, **kwargs):
 
         self._trig = DigPin(trig, 'OUTPUT')
         self._echo = DigPin(echo, 'INPUT')
         self._period = -1
-
-        self.board = None
 
         self._readThread = None
         self._readKey = -1
 
         self.duration = -1
         self.cm = -1
-        self._time = 0
 
-        if name==None: name= "HCSR04(trig={:d}, echo={:d})".format(trig, echo)
+        name= kwargs.get('name', "HCSR04(trig={:d}, echo={:d})".format(trig, echo))
+        BoardObj.__init__(self, name, pins=[echo, trig])
+        DataObj.__init__(self)
+        self.type= 'HCSR04'
 
-        obj.__init__(self, name, type="HCSR04", pins=[echo, trig])
         self.setupEvent(["update"])
 
-        ##UIX Compatibility
-        self.getValue= self.getDistance
-
     def setup(self, board):
-        self.board = board
-        self._trig.on(board)
-        self._echo.on(board)
+        board.add(self)
+
+        board.add(self._trig)
+        board.add(self._echo)
 
         self._readKey = self.board.getKey()
         self._readThread = self.board.newThread()
@@ -38,7 +40,7 @@ class HCSR04(obj):
         self.board.addListener(key=self._readKey, updateFunction=self.update, isInfinite= True)
         self.log(".setup() key="+str(self._readKey))
 
-    @uix_updater
+    @uix_view_update
     def update(self, duration):
 
         #error
@@ -51,13 +53,9 @@ class HCSR04(obj):
         self.log(":update duration="+str(duration)+" cm="+str(self.cm))
         self.event("update").call()
 
-        if self._period != -1 and self._plot != None:
-            self._time+= self._period
-            self._plot.points.append((self._time, self.cm))
+        self.appendData(self.cm)
 
-    def getDistance(self):
-        return self.cm
-
+    @uix_view_update
     def read(self, period=0):
         self._period = period
         self._readThread.start(self._period)
@@ -67,5 +65,17 @@ class HCSR04(obj):
         self._readThread.stop()
         self.log(".stopRead()")
 
+    ### UIX compatibility
     def getUIXView(self):
-        return "[b]{:f}cm[/b]".format(self.cm)
+        return '''[b]{:f}cm[/b]
+                  {:d} ms'''.format(self.cm, self._period)
+
+    def setValue(self, value, name):
+        if name == "period":
+            self.read(period)
+
+    def getValue(self, name):
+        if name == "cm":
+            return self.cm
+        if name == "period":
+            return self._period

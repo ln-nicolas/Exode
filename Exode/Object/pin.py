@@ -1,4 +1,7 @@
-from .model import obj, uix_updater
+#   pin.py
+#
+#   Created by Lenselle Nicolas, Januar, 2016.
+#   lenselle.nicolas@gmail.com
 
 from .obj import BoardObj, DataObj, uix_view_update
 
@@ -25,7 +28,7 @@ class DigPin(BoardObj, DataObj):
         self._writeThread  = None
 
         name= kwargs.get('name', "digPin({})".format(pin))
-        BoardObj.__init__(self, name, pins=[pin], **kwargs)
+        BoardObj.__init__(self, name, pins=[pin])
         DataObj.__init__(self)
 
         self.type= "DigPin"
@@ -33,11 +36,13 @@ class DigPin(BoardObj, DataObj):
         self.setupEvent(["switch", "on", "off"])
 
     def setup(self, board):
-        self.board = board
         board.add(self)
 
         board.addObject("digPin", self)
-        board.pinMode(self._pin, self._mode, analogic=self._analog)
+
+        ana = 1 if self._analog else 0
+        board.pinMode(self._pin, self._mode, ana)
+
         self.log(".mode("+str(self._mode)+")")
 
     @uix_view_update
@@ -150,7 +155,7 @@ class DigPin(BoardObj, DataObj):
     def getUIXView(self):
         if self._period != -1:
             if self._mode == 1:
-                return "[b] periodic switch [/b]\n {:d} ms".format(self._period)
+                return "[b] periodic switch [/b]\n {:d} ms".format(int(self._period))
             else:
                 return "[b][size=20]{:d}[/size] \n periodic listen [/b]\n {:d}ms".format(self._lvl, self._period)
         else:
@@ -160,8 +165,7 @@ class DigPin(BoardObj, DataObj):
     def setValue(self, value, name):
         if name == "period":
             self.periodicSwitch(value)
-
-        if name is None:
+        if name == "lvl":
             if self._analog:
                 self.analogWrite(value)
             else:
@@ -175,11 +179,9 @@ class DigPin(BoardObj, DataObj):
             else:
                 return self._lvl
 
-class AnaPin(obj):
+class AnaPin(BoardObj, DataObj):
 
     def __init__(self, pin, mode, name=None, **kwargs):
-
-        self.board = None
 
         self._pin = pin
         self._mode = _VARIABLES[mode]
@@ -192,9 +194,10 @@ class AnaPin(obj):
 
         self._time= 0
 
-        if name == None : name= "anaPin("+str(self._pin)+")"
+        name= kwargs.get('name', "anaPin({})".format(pin))
+        BoardObj.__init__(self, name, pins=[pin])
+        DataObj.__init__(self)
 
-        obj.__init__(self, name, type="AnaPin", pins=[pin], **kwargs)
         self.setupEvent(["update"])
 
     def setup(self, board):
@@ -205,15 +208,13 @@ class AnaPin(obj):
         board.pinMode(self._pin, self._mode, analogic=True)
         self.log(".AnaPinMode("+str(self._mode)+")")
 
-    @uix_updater
+    @uix_view_update
     def update(self, value):
         self.value = value
 
-        if self._period != -1 and self._plot != None:
-            self._time+= self._period
-            self._plot.points.append((self._time, value))
+        self.appendData(value)
 
-        self.log(":read "+str(value))
+        #self.log(":read "+str(value))
         self.event("update").call()
 
     def mode(self, mode):
@@ -227,7 +228,7 @@ class AnaPin(obj):
         self.board.addListener(key= key, updateFunction=self.update)
         self.log(".read()")
 
-    @uix_updater
+    @uix_view_update
     def listen(self, period= 100):
         self._period = period
 
@@ -243,11 +244,22 @@ class AnaPin(obj):
 
         self.log(".listen("+str(period)+")")
 
-    @uix_updater
+    @uix_view_update
     def stopListen(self):
         self._listenThread.stop()
         self.log(".stopListen()")
         self._period = -1
+
+    ### UIX compatibility
+
+    def setValue(self, value, name):
+        if name == "period":
+            self.listen(value)
+
+        ## to complete
+
+    def getValue(self, name):
+        return self.value
 
     def getUIXView(self):
         if self._period == -1:

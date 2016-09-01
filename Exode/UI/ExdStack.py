@@ -24,3 +24,9 @@ class ExdStack(StackLayout):
 
     def __init__(self, **kwargs):
         super(ExdStack, self).__init__(**kwargs)
+
+    def add_widget(self, widget, index=0):
+        StackLayout.add_widget(self, widget, index=0)
+
+        if hasattr(widget, 'updateSize'):
+            widget.updateSize()

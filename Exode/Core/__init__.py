@@ -13,7 +13,7 @@ logging.addLevelName(8, "obj")
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
-LOG_PATH = 'Exode-'+current_time.isoformat()+'.log'
+LOG_PATH = 'ExodeLog.log'
 
 formatter = logging.Formatter('%(asctime)s|%(name)s|%(message)s')
 handler = logging.FileHandler(LOG_PATH)

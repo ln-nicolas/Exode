@@ -17,9 +17,9 @@ _FUNCTIONS = {
     "analogWrite":4,
     "analogRead":5,
 
-    "addPPM":6,
-    "removePPM":7,
-    "writePPM":8,
+    "addServo":6,
+    "removeServo":7,
+    "writeServo":8,
 
     "pulse":9,
     "pulseIn":10,
@@ -28,13 +28,12 @@ _FUNCTIONS = {
     "initThread":12,
     "deleteThread":13,
 
-    "reset":14,
-    "checkExode":15
+    "checkExode":14
     }
+    
 _INV_FUNCTIONS = {v: k for k, v in _FUNCTIONS.items()}
-def fct(name):
+def ID(name):
     return _FUNCTIONS[name]
-
 
 _VARIABLES = {
     0:0,

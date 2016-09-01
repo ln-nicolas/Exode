@@ -15,10 +15,8 @@ from ..Core.callback import CallBack
 def uix_view_update(func):
     def wrapper(self, *args):
         val = func(self, *args)
-
         for view in self.views:
             view.update()
-
         return val
     return wrapper
 
@@ -27,25 +25,30 @@ def uix_view_update(func):
 #
 class AbstractObj:
 
-    def __init__(self, name):
+    def __init__(self, name="noname"):
         self.type  = "obj"
         self.name  = name
         self.views = []
+        self.events = {}
 
         self.color = [0.06, 0.25, 0.49, 1]
 
     def __repr__(self):
         return self.name
 
+    # log system
+
     def log(self, msg):
         logObj(str(self)+msg)
+
+    # UIX
 
     def getUIXView(self):
         # Return a string representation of itself,
         # could be styled with markdown
         return "[b]{}[/b]".format(self.name)
 
-    def getValue(self, **kwargs):
+    def getValue(self, name):
         # getter
         return -1
 
@@ -71,6 +74,7 @@ class AbstractObj:
         self.log(".attachEvent("+event+", "+str(callback)+", "+str(args))
         if not event in self.events:
             logCore(event+" is not defined on "+str(self))
+            self.event[event]= CallBack(function=callback)
         self.event[event].setCallback(callback, *args)
 
     def event(self, event):
@@ -96,12 +100,16 @@ class BoardObj(AbstractObj):
         if autoLoad:
             BOARD.autoAddObj(self)
 
+    def setup(self, board):
+        pass
+
     def __repr__(self):
         return str(self.board)+"."+self.name
 
     def on(self, board):
         # Init this obj on board
         if not hasattr(self, 'board'):
+            self.board= board
             self.setup(board)
         return self
 

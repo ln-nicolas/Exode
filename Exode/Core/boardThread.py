@@ -19,7 +19,7 @@
 #   Created by Lenselle Nicolas, January, 2016.
 #   lenselle.nicolas@gmail.com
 
-from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, fct
+from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, ID
 from .exode import ExodeSpeaker
 from . import logCore
 
@@ -43,10 +43,7 @@ class boardThread :
         self._instructions.append([name, args])
         logCore(name+"("+str(args)+") add to the "+str(self))
 
-    def start(self, period=0):
-
-        self._period = period
-
+    def getInstructionByteCluster(self):
         # we use a fake Speaker to get the byteCode
         fakeSpeaker = ExodeSpeaker(None,"fake")
         fakeSpeaker.mute = True
@@ -60,27 +57,36 @@ class boardThread :
             # byteCluster += fakeSpeaker.name(*args)
             byteCluster += getattr(fakeSpeaker, name)(*args)
 
+        return byteCluster
+
+    def start(self, period=0):
+
+        self._period = int(period)
+        byteCluster = self.getInstructionByteCluster()
 
         # if the period is 0, we just execute Thread once time
         if self._period == 0:
-            byteCluster = bytearray([fct('executeThread'),len(byteCluster)]) + byteCluster
+            byteCluster = bytearray([0, ID('executeThread'),len(byteCluster)]) + byteCluster
 
         # else we init a periodic thread
         else:
             self.on = True
             key = self._board.getKey()
             bytePeriod = bytearray(self._period.to_bytes(4,'little'))
-            byteCluster = bytearray([fct('initThread'), key]) + bytePeriod + bytearray([len(byteCluster)]) + byteCluster
+            byteCluster = bytearray([0, ID('initThread'), key]) + bytePeriod + bytearray([len(byteCluster)]) + byteCluster
             self._board.addListener(key=key, updateFunction=self.setID)
 
-        self._board.speak(byteCluster)
-        logCore(str(self)+" has been started with a cycle of "+str(period)+"ms ")
+        self._board.sendByteArray(byteCluster)
+        self.logStart()
+
+    def logStart(self):
+        logCore(str(self)+" has been started with a cycle of "+str(self._period)+"ms ")
 
     def stop(self):
         if self.on == True and self._ID != -1:
             self.period = -1
             self.on = False
-            self._board.speak(bytearray([fct('deleteThread')])+self._ID.to_bytes(4,'little'))
+            self._board.sendByteArray(bytearray([0, ID('deleteThread')])+self._ID.to_bytes(4,'little'))
             logCore(str(self)+ " has been stopped ")
 
     def __repr__(self):

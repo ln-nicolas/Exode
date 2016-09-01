@@ -76,7 +76,7 @@ class BoardManager():
             time.sleep(2)
             # This bit array execute the function checkExode()
             # on the board
-            sr.write(bytearray([1, fct('checkExode')]))
+            sr.write(bytearray([2, 0, ID('checkExode')]))
             sr.flush()
             time.sleep(0.25)
 
@@ -112,6 +112,8 @@ class Board(Exode):
             self.objLst= {}
             self.id = -1
             self.mute= False
+
+            self.timer1= False
 
             BOARD.add(self)
             if name != "":
