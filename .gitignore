@@ -15,8 +15,5 @@ site
 init-2.py
 
 init.py
-
-main.py
-
-.stan_hand
+stan_hand
 testShield.py
