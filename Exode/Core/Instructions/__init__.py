@@ -28,3 +28,5 @@ class InstructionSet():
 
 byte = ['byte']
 long = ['long']
+float = ['float']
+signedLong = ['signedLong']

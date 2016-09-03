@@ -15,6 +15,7 @@
 
 import serial
 import time
+import struct
 import _thread
 
 from .variable import _VARIABLES, _FUNCTIONS, _INV_FUNCTIONS, ID
@@ -61,6 +62,10 @@ class ExodeSpeaker :
                 byteArray += bytearray([value])
             elif type == 'long' :
                 byteArray += bytearray(value.to_bytes(4, 'little'))
+            elif type == 'signedLong' :
+                byteArray += bytearray(struct.pack("<i", value))
+            elif type == 'float' :
+                byteArray += bytearray(struct.pack("<f", value))
 
         return self.sendByteArray(byteArray)
 
