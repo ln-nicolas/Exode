@@ -1,46 +1,38 @@
-# Exode
-*version : beta 0.4*
+#Exode
+*1.0.4*
+
 
 <p align="center"><img src="img/logo.png" ></p>
-<p align="center"><img src="img/showcase.gif" ></p>
-<p align="left"><img src="img/python.png" ></p>
-<p align="right"><img src="img/arduino.png" ></p>
+<p align="center">Write Python scripts and take control of your Arduino board.</p>
+<p align="center"><img src="img/blinkLed.gif" ></p>
 
-
-Python's library for communication between Arduino microcontroller boards and a connected computer. Write Python script and take control on your board using a serial IO.
 
 ```python
 from Exode import *
 
 uno = Board('/dev/tty.wchusbserial1420')
 led = Led(13)
-
+led.write(0)
+led.write(1)
 led.blink(500)
 ```
 
-[Documentation](http://sne3ks.github.io/ExodeDoc/)
+* [Installation guide](https://github.com/sne3ks/Exode/wiki/Installation-guide)
+* [Documentation](http://sne3ks.github.io/ExodeDoc/)
 
-##  Fast and Intuitive
+> <span style="color:red;"><b>Exode still on the beta stadium, please signal your issues [here](https://github.com/sne3ks/Exode/issues) !</b></span>
 
-Exode was designed to simplify the development of Arduino projects. The library
-take advantages from the clear and light Python's syntax.
+## Rapid prototyping
 
-Once your Arduino connected to your device (computer, Rasberry Pi, smartphone ..)
-using a serial IO (usb/bluetooth), you're now allowed to have remote interactions
-with your board.
+Exode was designed to simplify the development of your Arduino projects. The library take advantages from the clear and light Python syntax.
 
-You microcontroller become a simple slave, let your computer process the most
-complex tasks. You may add artificial intelligence algorithm in your projects...
+Once your Arduino connected to your device (computer, Rasberry Pi, smartphone ..) using a serial IO (usb/bluetooth), you're now allowed to have remote interactions with your board. **Without having to compile your sources after each modification !**
 
-## Powerfull tools
+You microcontroller become a simple slave, **let your computer process the most complex tasks**. Why not add artificial intelligence algorithm in your projects ?
 
+## User graphic interface
 
-Many of Arduino components are implemented in Exode, that's way you can directly
-manipulate them with Python.
-
-### User graphic interface
-
-Interact with your object rapidly and simply through the Exode User interface.
+Interact with your objects rapidly and simply through the Exode User Interface.
 
 > Control led13 with a switchBox
 
@@ -57,11 +49,11 @@ radioBox = ExdRadioBox(target=led, title="Led13", value="lvl")
 APP.STACK.add_widget(switchBox)
 APP.STACK.add_widget(radioBox)
 ```
+<p align="center"><img src="img/blinkLedUi.gif" ></p>
 
-### Event-driven programming
+## Event-driven programming
 
-Exode use event-driven programming to manage the interactions between the differents
-components plugged on your board, or your computer it-self.
+Manage interactions between the different components plugged on your board, or your computer it-self.
 
 > Event with the HCSR04
 
@@ -69,31 +61,28 @@ components plugged on your board, or your computer it-self.
 from Exode import *
 uno = Board('/dev/tty.HC-06-DevB')
 
-#Print the distance read by a HCSR04 every 1s
-
-#Init the HCSR04
+# Init the HCSR04 (ER ultrasound) and a Led
 hcsr = HCSR04(echo=13, trig=12)
+led  = Led(13)
 
-#Define a function to print the distance
-def printValue():
-    print(hcsr.cm+" cm")
+# Define a control function
+def control():
+    if hcsr.cm() < 10:
+      led.write(1)
+    else:
+      led.write(0)
 
-#Attach the function to the event
-hcsr.attachEvent('readInput', printValue)
+# Bind the event to the function
+# When hcsr is updated, control is called
+hcsr.attachEvent('update', control)
 
-#Launch the read every 1000ms (1s)
-hcsr.read(1000)
-
->> 20.5 cm
->> 20.9 cm
->> 34.5 cm
->> ..
-
+# Read value every 100ms
+hcsr.read(100)
 ```
-### Asynchronous Process
 
-Furthermore, the Exode's kernel is based on a asynchronous processes,
-greatly simplifying your project !!
+## Multithreading
+
+You're able to run differents tasks asynchronously on your board.
 
 > Blink two led asynchronously
 
@@ -108,4 +97,5 @@ led14 = Led(14)
 led13.blink(250)
 led14.blink(500)
 
+# More tasks here..
 ```
