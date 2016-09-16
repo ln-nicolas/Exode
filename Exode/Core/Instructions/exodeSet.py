@@ -14,6 +14,7 @@ instructions = [
     [8,  "writeServo",             byte + long],
     [9,  "pulse",                  byte + long],
     [10, "pulseIn",                byte*2],
+    [14, "checkExode",             []],
     [15, "addStepper",             byte*6],
     [16, "setStepperAcceleration", byte + float],
     [17, "setStepperSpeed",        byte + float],

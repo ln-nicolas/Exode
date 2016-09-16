@@ -17,8 +17,8 @@ class HCSR04(BoardObj, DataObj):
         self._readThread = None
         self._readKey = -1
 
-        self.duration = -1
-        self.cm = -1
+        self.__duration = -1
+        self._cm = -1
 
         name= kwargs.get('name', "HCSR04(trig={:d}, echo={:d})".format(trig, echo))
         BoardObj.__init__(self, name, pins=[echo, trig])
@@ -40,6 +40,12 @@ class HCSR04(BoardObj, DataObj):
         self.board.addListener(key=self._readKey, updateFunction=self.update, isInfinite= True)
         self.log(".setup() key="+str(self._readKey))
 
+    def cm(self):
+        return self._cm
+
+    def duration(self):
+        return self._duration
+
     @uix_view_update
     def update(self, duration):
 
@@ -47,13 +53,13 @@ class HCSR04(BoardObj, DataObj):
         if duration > 26000:
             return
 
-        self.duration = duration
-        self.cm = round(duration/58.2, 2)
+        self._duration = duration
+        self._cm = round(duration/58.2, 2)
 
-        self.log(":update duration="+str(duration)+" cm="+str(self.cm))
+        self.log(":update duration="+str(duration)+" cm="+str(self._cm))
         self.event("update").call()
 
-        self.appendData(self.cm)
+        self.appendData(self._cm)
 
     @uix_view_update
     def read(self, period=0):
@@ -68,7 +74,7 @@ class HCSR04(BoardObj, DataObj):
     ### UIX compatibility
     def getUIXView(self):
         return '''[b]{:f}cm[/b]
-                  {:d} ms'''.format(self.cm, self._period)
+                  {:d} ms'''.format(self._cm, self._period)
 
     def setValue(self, value, name):
         if name == "period":
@@ -76,6 +82,6 @@ class HCSR04(BoardObj, DataObj):
 
     def getValue(self, name):
         if name == "cm":
-            return self.cm
+            return self._cm
         if name == "period":
             return self._period

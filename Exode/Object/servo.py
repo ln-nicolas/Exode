@@ -1,4 +1,4 @@
-#   pwmPin.py
+#   servoPwm.py
 #
 #   Created by Lenselle Nicolas, January, 2016.
 #   lenselle.nicolas@gmail.com
@@ -21,13 +21,13 @@ class servoPwm(BoardObj):
 
         self._pin= pin
 
-        name= kwargs.get('name', "pwmPin({})".format(pin))
+        name= kwargs.get('name', "servoPwm({})".format(pin))
         BoardObj.__init__(self, name, pins=[pin])
 
     def setup(self, board):
 
         board.add(self)
-        board.addObject("pwmPin",self)
+        board.addObject("servoPwm",self)
         self.init()
 
     @uix_view_update
@@ -94,7 +94,7 @@ class Servo(servoPwm):
         self._angle = angle
 
         name= kwargs.get('name', "Servo({})".format(pin))
-        pwmPin.__init__(self, pin, self.angleToUs(), name=name)
+        servoPwm.__init__(self, pin, self.angleToUs(), name=name)
         self.type= "Servo"
 
     def angleToUs(self):
@@ -125,12 +125,12 @@ class Servo(servoPwm):
     def write(self, angle):
         if angle >= self._minAngle and angle <= self._maxAngle:
             self._angle = angle
-            pwmPin.write(self, self.angleToUs())
+            servoPwm.write(self, self.angleToUs())
             self.log(".write("+str(angle)+")")
 
 
     def writeUs(self, us):
-        pwmPin.write(self, us)
+        servoPwm.write(self, us)
         self._angle = int((us-self._zeroUs)/self._angleToUs)
         self.log(".writeUs("+str(us)+")")
 

@@ -121,7 +121,7 @@ class ExdController():
     bgcolor = ListProperty([0.06, 0.25, 0.49, 1])
 
     def __init__(self, target, value=None, **kwargs):
-        self.value= value
+        self.valueName= value
         self._value= 0
 
         if hasattr(target, '__call__'):
@@ -139,7 +139,7 @@ class ExdController():
             self.bgcolor= kwargs.get('color')
 
     def update(self):
-        self._value= self.obj.getValue(self.value)
+        self._value= self.obj.getValue(self.valueName)
 
     def on_value_(self, value):
         if value != self._value:
@@ -147,7 +147,7 @@ class ExdController():
             self.update_target()
 
     def update_target(self):
-        self.cb.call(self._value, self.value)
+        self.cb.call(self._value, self.valueName)
 
 #
 #   ExdControllerBox
@@ -255,7 +255,6 @@ class ExdSlider(ExdController, Slider):
     def on_value_(self, value):
         if not self.float:
             value= int(value)
-            print("here bug")
 
         if value != self._value:
             self._value= value
