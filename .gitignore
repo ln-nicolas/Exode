@@ -11,10 +11,13 @@ Exode/Object/__pycache__
 *.ex.py
 *.pyc
 site
-
+alpha.py
 init-2.py
-
+data.csv
 init.py
 stanHand
 testShield.py
 radarIA.py
+main.py
+matplot.py
+test.py
