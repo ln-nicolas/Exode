@@ -8,6 +8,8 @@
 from ..Core import BOARD, logCore, logObj, EXD_TIME
 from ..Core.callback import CallBack
 
+import time
+
 import io
 
 #
@@ -154,3 +156,8 @@ class DataObj:
     def closeStream(self):
         self.output.close()
         self.output=None
+
+    def waitData(self):
+        l = len(self.plot)
+        while l == len(self.plot):
+            time.sleep(0.005)

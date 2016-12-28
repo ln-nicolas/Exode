@@ -71,11 +71,19 @@ class ExodeSpeaker :
 
     # Return a method calling an instruction on the board
     def makeInstructionMethod(self, set_id, instruction_id, instruction_types):
-        def method(self, *args):
+        def method(self, *args, **kwargs):
 
             typed_arg = [('byte', set_id), ('byte', instruction_id)]
+
+            # args loop
             for i in range(0, len(args)):
                 typed_arg.append((instruction_types[i], args[i]))
+
+            # kwargs loop
+            inst_id = len(args) - 1
+            for key, value in kwargs.items():
+                typed_arg.append((instruction_types[inst_id], args[inst_id]))
+                inst_id+= 1
 
             return self.send(*typed_arg)
 

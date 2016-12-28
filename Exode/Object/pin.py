@@ -37,18 +37,16 @@ class DigPin(BoardObj, DataObj):
 
     def setup(self, board):
         board.add(self)
-
         board.addObject("digPin", self)
-
-        ana = 1 if self._analog else 0
-        board.pinMode(self._pin, self._mode, ana)
-
+        board.pinMode(self._pin, self._mode, self._analog)
         self.log(".mode("+str(self._mode)+")")
 
     @uix_view_update
     def mode(self, mode):
-        self._mode = mode
+        self._mode = _VARIABLES[mode]
+
         self.board.pinMode(self._pin, mode, analogic=self._analog)
+
         self.log(".mode("+str(self._mode)+")")
 
     @uix_view_update
@@ -219,7 +217,7 @@ class AnaPin(BoardObj, DataObj):
 
     def mode(self, mode):
         self._mode = _VARIABLES[mode]
-        self.board.pinMode(self._pin, mode, analogic=True)
+        self.board.pinMode(self._pin, self._mode, analogic=True)
         self.log(".mode("+str(mode)+")")
 
     def read(self):

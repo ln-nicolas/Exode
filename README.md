@@ -1,5 +1,5 @@
 #Exode
-*1.0.4*
+*1.0.6*
 
 
 <p align="center"><img src="img/logo.png" ></p>
