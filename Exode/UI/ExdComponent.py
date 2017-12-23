@@ -216,7 +216,7 @@ class ExdTextInput(ExdController, TextInput):
         self.update_target()
 
     def update(self):
-        self._value= self.obj.getValue(self.value)
+        self._value= self.obj.getValue(self.valueName)
         self.text= str(self._value)
 
 Builder.load_string('''
@@ -261,7 +261,7 @@ class ExdSlider(ExdController, Slider):
             self.update_target()
 
     def update(self):
-        self._value= self.obj.getValue(self.value)
+        self._value= self.obj.getValue(self.valueName)
         self.value = self._value
 
 Builder.load_string('''
@@ -298,7 +298,7 @@ class ExdRadio(ExdController, StackLayout):
             self.update_target()
 
     def update(self):
-        self._value= self.obj.getValue(self.value)
+        self._value= self.obj.getValue(self.valueName)
         self.ids.check.active= self._value
 
 Builder.load_string('''
@@ -349,7 +349,7 @@ class ExdSwitch(ExdController, Switch):
             self.update_target()
 
     def update(self):
-        self._value= self.obj.getValue(self.value)
+        self._value= self.obj.getValue(self.valueName)
         self.active= self._value
 
 Builder.load_string('''
