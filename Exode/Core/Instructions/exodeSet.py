@@ -19,6 +19,7 @@ instructions = [
     [16, "setStepperAcceleration", byte + float],
     [17, "setStepperSpeed",        byte + float],
     [18, "moveStepper",            byte + signedLong]
+    [19, "sleep",                  long]
 ]
 
 for inst in instructions:
